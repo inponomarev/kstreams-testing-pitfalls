@@ -116,7 +116,7 @@ assertEquals(expected, actual);
 
 Оба решения (и верное, и неверное) проходят тест на базе `TopologyTestDriver`, и, чтобы отделить одно от другого, мы уже вынуждены задействовать в тестах настоящую Kafka.
 
-# EmbeddedKafka и TestContainers
+## EmbeddedKafka и TestContainers
 
 Для использования "настоящий" Кафки в тестах существуют две распространённые альтернативы: EmbeddedKafka и TestContainers.
  
