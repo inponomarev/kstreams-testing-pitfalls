@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>ru.curs</groupId>
+    <artifactId>kstreams-test-parent</artifactId>
+    <version>1.0.0-SNAPSHOT</version>
+    <name>kstreams-test</name>
+    <description>Demo for 'Kafka Streams Testing Pitfalls' post</description>
+    <packaging>pom</packaging>
+
+    <modules>
+        <module>bom</module>
+        <module>distinct</module>
+    </modules>
+
+    <organization>
+        <name>CURS</name>
+        <url>https://corchestra.ru</url>
+    </organization>
+
+    <developers>
+        <developer>
+            <name>Ivan Ponomarev</name>
+            <email>ponomarev@corchestra.ru</email>
+        </developer>
+    </developers>
+</project>

@@ -1,0 +1,24 @@
+target/
+rocksdb/
+slides-short/
+
+### STS ###
+.apt_generated
+.classpath
+.factorypath
+.project
+.settings
+.springBeans
+.sts4-cache
+
+### IntelliJ IDEA ###
+.idea
+*.iws
+*.iml
+*.ipr
+
+#auto-generated images
+slides/src/main/asciidoc/*.png
+/old/
+/*.mp4
+/*.bat
