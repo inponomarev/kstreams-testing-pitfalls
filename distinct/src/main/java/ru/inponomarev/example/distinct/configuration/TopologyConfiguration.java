@@ -1,4 +1,4 @@
-package ru.curs.example.distinct.configuration;
+package ru.inponomarev.example.distinct.configuration;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.kafka.clients.admin.NewTopic;
@@ -14,7 +14,6 @@ import org.apache.kafka.streams.state.Stores;
 import org.apache.kafka.streams.state.WindowStore;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Profile;
 
 import java.time.Duration;
 
@@ -30,22 +29,22 @@ public class TopologyConfiguration {
 
     @Bean
     public NewTopic inputWrong() {
-        return new NewTopic(INPUT_TOPIC_WRONG, 10, (short) 1);
+        return new NewTopic(INPUT_TOPIC_WRONG, 1, (short) 1);
     }
 
     @Bean
     public NewTopic outputWrong() {
-        return new NewTopic(OUTPUT_TOPIC_WRONG, 10, (short) 1);
+        return new NewTopic(OUTPUT_TOPIC_WRONG, 1, (short) 1);
     }
 
     @Bean
     public NewTopic inputRight() {
-        return new NewTopic(INPUT_TOPIC_RIGHT, 10, (short) 1);
+        return new NewTopic(INPUT_TOPIC_RIGHT, 1, (short) 1);
     }
 
     @Bean
     public NewTopic outputRight() {
-        return new NewTopic(OUTPUT_TOPIC_RIGHT, 10, (short) 1);
+        return new NewTopic(OUTPUT_TOPIC_RIGHT, 1, (short) 1);
     }
 
     private void wrongDistinctTopology(StreamsBuilder streamsBuilder) {

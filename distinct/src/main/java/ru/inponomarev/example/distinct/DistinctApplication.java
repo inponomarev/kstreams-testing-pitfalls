@@ -1,4 +1,4 @@
-package ru.curs.example.distinct;
+package ru.inponomarev.example.distinct;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

@@ -1,4 +1,4 @@
-package ru.curs.example.distinct.configuration;
+package ru.inponomarev.example.distinct.configuration;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.kafka.streams.StreamsConfig;
@@ -24,6 +24,8 @@ public class KafkaConfiguration {
         props.put(StreamsConfig.APPLICATION_ID_CONFIG, APP_ID);
         props.put(StreamsConfig.NUM_STREAM_THREADS_CONFIG, 4);
         props.put(StreamsConfig.BOOTSTRAP_SERVERS_CONFIG, kafkaProperties.getBootstrapServers());
+        //turn off caching
+        //props.put(StreamsConfig.COMMIT_INTERVAL_MS_CONFIG, 0);
         KafkaStreamsConfiguration streamsConfig = new KafkaStreamsConfiguration(props);
         return streamsConfig;
     }

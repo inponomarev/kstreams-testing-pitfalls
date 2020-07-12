@@ -1,4 +1,4 @@
-package ru.curs.example.distinct;
+package ru.inponomarev.example.distinct;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -7,10 +7,10 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.kafka.test.context.EmbeddedKafka;
 import org.springframework.test.annotation.DirtiesContext;
 
-import static ru.curs.example.distinct.configuration.TopologyConfiguration.INPUT_TOPIC_RIGHT;
-import static ru.curs.example.distinct.configuration.TopologyConfiguration.INPUT_TOPIC_WRONG;
-import static ru.curs.example.distinct.configuration.TopologyConfiguration.OUTPUT_TOPIC_RIGHT;
-import static ru.curs.example.distinct.configuration.TopologyConfiguration.OUTPUT_TOPIC_WRONG;
+import static ru.inponomarev.example.distinct.configuration.TopologyConfiguration.INPUT_TOPIC_RIGHT;
+import static ru.inponomarev.example.distinct.configuration.TopologyConfiguration.INPUT_TOPIC_WRONG;
+import static ru.inponomarev.example.distinct.configuration.TopologyConfiguration.OUTPUT_TOPIC_RIGHT;
+import static ru.inponomarev.example.distinct.configuration.TopologyConfiguration.OUTPUT_TOPIC_WRONG;
 
 @SpringBootTest
 @EmbeddedKafka(bootstrapServersProperty = "spring.kafka.bootstrap-servers")
@@ -20,14 +20,14 @@ public class TestTopologyKafkaEmbedded extends BaseTest {
     private KafkaProperties properties;
 
     @Test
-    public void testWrongDistinct() {
+    public void wrongDistinctTopology() {
         String servers = String.join(",", properties.getBootstrapServers());
         System.out.printf("Kafka Container: %s%n", servers);
         this.testDistinct(servers, INPUT_TOPIC_WRONG, OUTPUT_TOPIC_WRONG);
     }
 
     @Test
-    public void testRightDistinct() {
+    public void rightDistinctTopology() {
         String servers = String.join(",", properties.getBootstrapServers());
         System.out.printf("Kafka Container: %s%n", servers);
         this.testDistinct(servers, INPUT_TOPIC_RIGHT, OUTPUT_TOPIC_RIGHT);

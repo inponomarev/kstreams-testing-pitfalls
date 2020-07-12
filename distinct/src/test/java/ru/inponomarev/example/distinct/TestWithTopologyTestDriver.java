@@ -1,4 +1,4 @@
-package ru.curs.example.distinct;
+package ru.inponomarev.example.distinct;
 
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.apache.kafka.common.serialization.StringSerializer;
@@ -13,14 +13,13 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.autoconfigure.kafka.KafkaProperties;
 import org.springframework.kafka.config.KafkaStreamsConfiguration;
-import ru.curs.example.distinct.configuration.KafkaConfiguration;
-import ru.curs.example.distinct.configuration.TopologyConfiguration;
+import ru.inponomarev.example.distinct.configuration.KafkaConfiguration;
+import ru.inponomarev.example.distinct.configuration.TopologyConfiguration;
 
-import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import static java.util.Collections.singletonList;
+import static java.util.stream.Collectors.toList;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class TestWithTopologyTestDriver {
@@ -60,27 +59,24 @@ public class TestWithTopologyTestDriver {
     }
 
     @Test
-    void testWrongDistinctTopology() {
+    void wrongDistinctTopology() {
         testTopology(inputTopicWrong, outputTopicWrong);
     }
 
     @Test
-    void testRightDistinctTopology() {
+    void rightDistinctTopology() {
         testTopology(inputTopicRight, outputTopicRight);
     }
 
     private void testTopology(TestInputTopic<String, String> inputTopic,
                               TestOutputTopic<String, String> outputTopic) {
-        inputTopic.pipeKeyValueList(Arrays.asList(
-                KeyValue.pair("A", "A"),
-                KeyValue.pair("B", "B"),
-                KeyValue.pair("B", "B"),
-                KeyValue.pair("A", "A"),
-                KeyValue.pair("C", "C")
-        ));
-        List<String> expected = Arrays.asList("A", "B", "C");
-        List<String> actual = outputTopic.readValuesToList();
-        assertEquals(expected, actual);
+
+        inputTopic.pipeKeyValueList(
+                List.of("A", "B", "B", "A", "C")
+                        .stream().map(e -> KeyValue.pair(e, e))
+                        .collect(toList())
+        );
+        assertEquals(List.of("A", "B", "C"), outputTopic.readValuesToList());
     }
 
 

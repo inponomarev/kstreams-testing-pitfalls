@@ -16,6 +16,9 @@
     <name>distinct</name>
     <description>Distinct transform testing example</description>
 
+    <properties>
+        <java.version>11</java.version>
+    </properties>
 
     <dependencies>
         <dependency>
@@ -76,6 +79,13 @@
             <groupId>org.testcontainers</groupId>
             <artifactId>kafka</artifactId>
             <version>1.13.0</version>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.awaitility</groupId>
+            <artifactId>awaitility</artifactId>
+            <version>4.0.3</version>
             <scope>test</scope>
         </dependency>
     </dependencies>

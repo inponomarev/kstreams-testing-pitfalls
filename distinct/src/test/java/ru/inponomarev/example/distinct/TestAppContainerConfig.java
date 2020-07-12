@@ -1,4 +1,4 @@
-package ru.curs.example.distinct;
+package ru.inponomarev.example.distinct;
 
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.ApplicationContextInitializer;

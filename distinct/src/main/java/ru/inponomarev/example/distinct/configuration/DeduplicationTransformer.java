@@ -1,4 +1,4 @@
-package ru.curs.example.distinct.configuration;
+package ru.inponomarev.example.distinct.configuration;
 
 import org.apache.kafka.streams.kstream.KeyValueMapper;
 import org.apache.kafka.streams.kstream.ValueTransformerWithKey;
