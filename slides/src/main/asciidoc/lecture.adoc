@@ -1,0 +1,369 @@
+= Kafka Streams Testing: A Deep Dive
+Ivan Ponomarev, KURS/MIPT; John Roesler, Confluent
+:revealjs_theme: black
+:revealjs_customtheme: white_course.css
+:revealjs_slideNumber:
+:revealjs_history:
+:revealjs_progress:
+:encoding: UTF-8
+:lang: ru
+include::_doc_general_attributes.adoc[]
+:doctype: article
+:toclevels: 3
+:imagesdir: images
+:source-highlighter: highlightjs
+:highlightjsdir: highlight
+:icons: font
+:iconfont-remote!:
+:iconfont-name: font-awesome-4.7.0/css/font-awesome
+:revealjs_mouseWheel: true
+:revealjs_center: false
+:revealjs_transition: none
+:revealjs_width: 1600
+:revealjs_height: 900
+:stem: latexmath
+
+
+//== Часть 1. Введение
+:!figure-caption:
+
+ponomarev@corchestra.ru
+
+icon:twitter[size=lg] @inponomarev
+
+== Speakers Introduction
+
+* Slide about John
+
+* Slide about Ivan
+
+== The problem
+
+[graphviz,"dedup-problem.png"]
+----
+digraph G {
+graph [ dpi = 180 ];
+rankdir="LR";
+node[shape=box];
+A1[label="A"];
+B1[label="B"];
+A2[label="A"];
+B2[label="B"];
+
+A1 -> B1 -> B2 ->A2 ;
+DB[shape="cylinder", label=<<table>
+        <tr><td>A</td>
+        <vr/><td>B<td></td></tr></table>>];
+A2->DB;
+}
+----
+
+[.notes]
+--
+Ivan: We recieve signals from a number of detectors, and we want to collect all the ID's of detectors that sent something to us at least once.
+
+The signals are being sent to Kafka topic, and we want to pipe them to Redis or any other database. 
+--
+
+== The problem
+
+[graphviz,"dedup-problem.png"]
+----
+digraph G {
+graph [ dpi = 180 ];
+rankdir="LR";
+node[shape=box];
+A1[label="A"];
+B1[label="B"];
+A2[label="A"];
+B2[label="B"];
+
+A1 -> B1 -> B2 ->A2 ;
+DB[shape="cylinder", label=<<table>
+        <tr><td>A</td>
+        <vr/><td>B<td></td></tr></table>>];
+A2->DB;
+}
+----
+
+[.notes]
+--
+But the problem is that we obtain lots of data from the detector and we don't want to write to the database each time we get an update. 
+--
+
+
+== The solution
+
+[graphviz,"dedup-solution.png"]
+----
+digraph G {
+graph [ dpi = 180 ];
+rankdir="LR";
+node[shape=box];
+A1[label="A"];
+B1[label="B"];
+A2[label="A"];
+B2[label="B"];
+
+A1 -> B1 -> B2 ->A2 ;
+
+A2->Kafka;
+
+Ad[label="A"];
+Bd[label="B"];
+
+
+Kafka->Ad->Bd->DB;
+
+
+DB[shape="cylinder", label=<<table>
+        <tr><td>A</td>
+        <vr/><td>B<td></td></tr></table>>];
+}
+----
+
+[.notes]
+--
+That's why we would like to deduplicate records using Kafka streams before we dump them to the database
+
+Looks like a perfect fit for KStreams - let's write an application!
+--
+
+== Demo
+
+1. Spring Boot app
+2. Let's do some test-driven development and first write a test
+3. Writing a test with TTDriver
+
+[.notes]
+--
+Ivan is live-coding, John is commenting 
+Test fails because nothing is implemented yet
+Then we turn to slides to discuss what TTD can do
+
+--
+
+== TTD Capabilities
+
+[source,java]
+-----
+TestInputTopic<String, String> inputTopic =
+   topologyTestDriver.createInputTopic(
+     	INPUT_TOPIC, new StringSerializer(), new StringSerializer());
+TestOutputTopic<String, String> outputTopic =
+   topologyTestDriver.createOutputTopic(
+     	OUTPUT_TOPIC, new StringDeserializer(), new StringDeserializer());
+-----
+
+
+== TTD Capabilities
+
+[cols="30a,35a,35a"]
+|===
+|What is being sent/received 	
+|TestInputTopic methods 	
+|TestOutputTopic methods
+|A single value 	
+|`pipeInput (V)` 	
+|`V readValue ()`
+|A key/value pair 	
+|`pipeInput (K, V)` 	
+|`KeyValue<K,V> readKeyValue()`
+|A list of values 	
+|`pipeValueList (List<V>)` 	
+|`List<V>
+readValuesToList()`
+|A list of key/value pairs 	
+|`pipeValueList (List<V>)` 	
+|`List<KeyValue<K,V>> readKeyValuesToList()`
+
+`Map<K,V> readKeyValuesToMap()`
+|A list of Records 	
+|`pipeRecordList (List<? extends TestRecord<K, V>>)` 	|`List<TestRecord<K, V>>
+readRecordsToList()`
+|===
+
+== TTD Capabilities: Timestamp emulation
+
+[cols="50a,50a"]
+|===
+|What is being sent 	
+|TestInputTopic methods
+|A value or a key/value pair with a given timestamp 	|`pipeInput(V, Instant)`
+
+`pipeInput(K, V, Instant)`
+|
+A value list or a key/value list with a given timestamp for the first record and a time difference between two consecutively generated records
+|`pipeValueList (List<V>, Instant, Duration)`
+
+`pipeKeyValueList(List<KeyValue<K, V>>,
+                Instant,
+                Duration)`
+|===
+
+== A "Simple Solution"
+
+[graphviz,"wrong-topology.png"]
+----
+digraph G {
+graph [ dpi = 180 ];
+rankdir="LR";
+node[shape=box];
+A1[label="A"];
+B1[label="B"];
+A2[label="A"];
+B2[label="B"];
+
+A1 -> B1 -> B2 ->A2 ;
+
+A2->Kafka;
+
+Kafka[label="reduce \n (a, b) -> <STOP>"]
+}
+----
+
+[.notes]
+--
+Ivan: now we need to implement the deduplication
+
+We want to do this as simple as possible and avoid using key-value stores and the Processor API 
+--
+
+== Demo
+
+* writing the topology
+* TopologyTestDriver test is green
+
+== Should we run this in production?
+
+* In production it doesn't work
+
+== Why it's not working
+
+
+[graphviz,"wrong-topology.png"]
+----
+digraph G {
+graph [ dpi = 180 ];
+rankdir="LR";
+node[shape=box];
+A1[label="A"];
+B1[label="B"];
+A2[label="A"];
+B2[label="B"];
+
+A1 -> B1 -> B2 ->A2 ;
+
+A2->Kafka;
+
+Kafka[label="reduce \n (a, b) -> <STOP>"]
+}
+----
+
+
+[.notes]
+--
+John: explains how cache works in real Kafka cluster
+
+Explains how TopologyTestDriver works
+
+--
+
+== Let's run tests on real Kafka!
+
+* EmbeddedKafka 
+
+* TestContainers
+
+== EmbeddedKafka vs TestContainers
+
+[cols="50a,50a"]
+|===
+|EmbeddedKafka
+|TestContainers
+|
+* Pro:
+** Just pull in a dependency
+* Contra:
+** Pulls in Scala 
+** Runs in the same JVM
+
+
+|
+* Pro
+** Runs Kafka isolated in Docker
+** Not only for Kafka testing
+* Contra
+** Needs Docker
+** Requires some time for the first start
+|===
+
+== Demo
+
+* Writing TestContainers test
+
+** An easy part: pushing messages to Kafka
+** A not so easy part: how do we check the output?
+
+
+
+[.notes]
+--
+Writing the first attempt (with Thread.sleep)
+
+This test should be red
+--
+
+== Demo
+
+* Deduplication: the correct implementation
+
+* Now the test is green, but takes 5 seconds!
+
+[.notes]
+--
+This should be copy-pasted from Confluent tutorials
+TODO: add graphics explaining the working principle
+--
+
+== Does it have to be so slow?
+
+[source,java]
+-----
+List actual = new ArrayList<>();
+
+while (true) {
+  ConsumerRecords<String, String> records =
+    KafkaTestUtils.getRecords(consumer, 5000 /* timeout in ms */);
+  if (records.isEmpty()) break;
+  for (ConsumerRecord<String, String> rec : records) {
+    actual.add(rec.value());
+  }
+}
+  
+assertEquals(List.of("A", "B", "C"), actual);
+-----
+
+== Awaitility
+
+[source,java]
+-----
+Awaitility.await().atMost(10, SECONDS).until(
+         	() -> List.of("A", "B", "C").equals(actual));
+-----
+
+== Things we must keep in mind
+
+* Cooperative termination
+* Thread-safe data structure
+
+== Demo
+
+* Green test runs faster
+
+== Summary
+
+[%step]
+* TopologyTestDriver is a required tool
+* But it doesn't fully reflect all aspects of real Kafka cluster
+* Integration tests are 'real', but asynchronous
