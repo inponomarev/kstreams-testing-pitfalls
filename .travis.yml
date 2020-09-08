@@ -13,7 +13,7 @@ cache:
   directories:
   - $HOME/.m2
 
-script: mvn -fn clean verify
+script: mvn clean verify -DskipTests
 
 deploy:
   provider: pages
