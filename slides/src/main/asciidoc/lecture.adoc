@@ -91,7 +91,7 @@ A2->DB;
 
 [.notes]
 --
-But the problem is that we obtain lots of data from the detector and we don't want to write to the database each time we get an update. 
+But the problem is that we obtain lots of data from each detector and we don't want to write to the database each time we get an update. 
 --
 
 
@@ -144,8 +144,8 @@ Looks like a perfect fit for KStreams - let's write an application!
 
 [.notes]
 --
-Ivan is live-coding, John is commenting 
-Test fails because nothing is implemented yet
+Ivan is live-coding, John is commenting. 
+Test fails because nothing is implemented yet.
 Then we turn to slides to discuss what TTD can do
 
 --
