@@ -37,16 +37,15 @@ icon:twitter[size=lg] @inponomarev
 
 * Slide about Ivan
 
-== The problem
+== The task
 
 Save different source IDs in the database
 
-[graphviz,"dedup-problem.png"]
+[graphviz,"dedup-problem1.png"]
 ----
 digraph G {
 graph [ dpi = 180 ];
 rankdir="LR";
-node[shape=box];
 A1[label="A"];
 B1[label="B"];
 A2[label="A"];
@@ -69,19 +68,21 @@ The signals are being sent to Kafka topic, and we want to pipe them to Redis or 
 
 == The problem
 
-[graphviz,"dedup-problem.png"]
+Too many writes to the database
+
+[graphviz,"dedup-problem2.png"]
 ----
 digraph G {
 graph [ dpi = 180 ];
 rankdir="LR";
-node[shape=box];
+
 A1[label="A"];
 B1[label="B"];
 A2[label="A"];
 B2[label="B"];
 
 A1 -> B1 -> B2 ->A2 ;
-DB[shape="cylinder", label=<<table cellspacing="5" cellborder="0"  border="1">
+DB[shape="cylinder", label=<<table cellspacing="5" cellborder="0"  border="0">
         <tr><td colspan="2"><IMG SCALE="BOTH" SRC="slides/src/main/asciidoc/images/worried.png"/></td></tr>
         <tr><td>A</td>
         <vr/><td>B</td></tr></table>>];
@@ -99,12 +100,13 @@ But the problem is that we obtain lots of data from the detector and we don't wa
 
 == The solution
 
+Let's deduplicate using Kafka Streams!
+
 [graphviz,"dedup-solution.png"]
 ----
 digraph G {
 graph [ dpi = 180 ];
 rankdir="LR";
-node[shape=box];
 A1[label="A"];
 B1[label="B"];
 A2[label="A"];
@@ -120,8 +122,10 @@ Bd[label="B"];
 
 Kafka->Ad->Bd->DB;
 
+Kafka[shape="none",label="",
+   image="slides/src/main/asciidoc/images/kafka-logo.png"];
 
-DB[shape="cylinder", label=<<table cellspacing="5" cellborder="0"  border="1">
+DB[shape="cylinder", label=<<table cellspacing="5" cellborder="0"  border="0">
         <tr><td colspan="2"><IMG SCALE="BOTH" SRC="slides/src/main/asciidoc/images/smiley.png"/></td></tr>
         <tr><td>A</td>
         <vr/><td>B</td></tr></table>>];
@@ -149,7 +153,7 @@ Then we turn to slides to discuss what TTD can do
 
 --
 
-== TTD Capabilities
+== `TopologyTestDriver`
 
 [source,java]
 -----
@@ -162,7 +166,7 @@ TestOutputTopic<String, String> outputTopic =
 -----
 
 
-== TTD Capabilities
+== `TopologyTestDriver` Capabilities
 
 [cols="30a,35a,35a"]
 |===
@@ -175,6 +179,16 @@ TestOutputTopic<String, String> outputTopic =
 |A key/value pair 	
 |`pipeInput (K, V)` 	
 |`KeyValue<K,V> readKeyValue()`
+|===
+
+
+== `TopologyTestDriver` Capabilities
+
+[cols="30a,35a,35a"]
+|===
+|What is being sent/received 	
+|TestInputTopic methods 	
+|TestOutputTopic methods
 |A list of values 	
 |`pipeValueList (List<V>)` 	
 |`List<V>
@@ -189,7 +203,8 @@ readValuesToList()`
 readRecordsToList()`
 |===
 
-== TTD Capabilities: Timestamp emulation
+
+== `TopologyTestDriver` Capabilities: Timestamp emulation
 
 [cols="50a,50a"]
 |===
@@ -214,7 +229,6 @@ A value list or a key/value list with a given timestamp for the first record and
 digraph G {
 graph [ dpi = 180 ];
 rankdir="LR";
-node[shape=box];
 A1[label="A"];
 B1[label="B"];
 A2[label="A"];
@@ -224,7 +238,7 @@ A1 -> B1 -> B2 ->A2 ;
 
 A2->Kafka;
 
-Kafka[label="reduce \n (a, b) → <STOP>"]
+Kafka[shape=box,label="reduce \n (a, b) → <STOP>"]
 }
 ----
 
@@ -242,7 +256,7 @@ We want to do this as simple as possible and avoid using key-value stores and th
 digraph G {
 graph [ dpi = 180 ];
 rankdir="LR";
-node[shape=box];
+
 A1[label="A"];
 B1[label="B"];
 A2[label="A"];
@@ -250,8 +264,7 @@ B2[label="B"];
 
 A1 -> B1 -> B2 -> Kafka -> A2 ;
 
-
-Kafka[label="reduce \n (a, b) → <STOP>"]
+Kafka[shape=box,label="reduce \n (a, b) → <STOP>"]
 }
 ----
 
@@ -262,7 +275,6 @@ Kafka[label="reduce \n (a, b) → <STOP>"]
 digraph G {
 graph [ dpi = 180 ];
 rankdir="LR";
-node[shape=box];
 A1[label="A"];
 B1[label="B"];
 A2[label="A"];
@@ -271,7 +283,7 @@ B2[label="B"];
 A1 -> B1 ->  Kafka -> B2 -> A2 ;
 
 
-Kafka[label="reduce \n (a, b) → <STOP>"]
+Kafka[shape=box,label="reduce \n (a, b) → <STOP>"]
 }
 ----
 
@@ -282,16 +294,14 @@ Kafka[label="reduce \n (a, b) → <STOP>"]
 digraph G {
 graph [ dpi = 180 ];
 rankdir="LR";
-node[shape=box];
 A1[label="<STOP>"];
 B1[label="<STOP>"];
 A2[label="A"];
 B2[label="B"];
 
-  Kafka -> A1 -> B1 -> B2 -> A2 ;
+Kafka -> A1 -> B1 -> B2 -> A2 ;
 
-
-Kafka[label="reduce \n (a, b) → <STOP>"]
+Kafka[shape=box,label="reduce \n (a, b) → <STOP>"]
 }
 ----
 
@@ -308,12 +318,11 @@ Kafka[label="reduce \n (a, b) → <STOP>"]
 == Why it's not working
 
 
-[graphviz,"wrong-topology1.png"]
+[graphviz,"cache1.png"]
 ----
 digraph G {
 graph [ dpi = 180 ];
 rankdir="LR";
-node[shape=box];
 A1[label="A"];
 B1[label="B"];
 A2[label="A"];
@@ -323,11 +332,11 @@ A1 -> B1 -> B2 ->A2 ;
 
 A2->Kafka;
 
-Kafka[label="reduce \n (a, b) → <STOP>"]
+Kafka[shape=box,label="reduce \n (a, b) → <STOP>"]
 
 Kafka -> Cache
 
-Cache[label=<<table cellspacing="5" cellborder="0"  border="0">
+Cache[shape=box,label=<<table cellspacing="5" cellborder="0"  border="0">
         <tr><td colspan="2">Cache</td></tr>
         <tr><td> </td>
         <td> </td></tr></table>>]
@@ -346,22 +355,22 @@ Explains how TopologyTestDriver works
 == Why it's not working
 
 
-[graphviz,"wrong-topology2.png"]
+[graphviz,"cache2.png"]
 ----
 digraph G {
 graph [ dpi = 180 ];
 rankdir="LR";
-node[shape=box];
+
 A1[label="A"];
 B1[label="B"];
 
 A1 -> B1 ->Kafka;
 
-Kafka[label="reduce \n (a, b) → <STOP>"]
+Kafka[shape=box,label="reduce \n (a, b) → <STOP>"]
 
 Kafka -> Cache
 
-Cache[label=<<table cellspacing="5" cellborder="0"  border="0">
+Cache[shape=box,label=<<table cellspacing="5" cellborder="0"  border="0">
         <tr><td colspan="2">Cache</td></tr>
         <tr><td>A</td>
         <vr/><td>B</td></tr></table>>]
@@ -372,23 +381,22 @@ Cache[label=<<table cellspacing="5" cellborder="0"  border="0">
 == Why it's not working
 
 
-[graphviz,"wrong-topology3.png"]
+[graphviz,"cache3.png"]
 ----
 digraph G {
 
 graph [ dpi = 180 ];
 rankdir="LR";
-node[shape=box];
 A1[label="<STOP>"];
 B1[label="<STOP>"];
 
 Kafka;
 
-Kafka[label="reduce \n (a, b) → <STOP>"]
+Kafka[shape=box,label="reduce \n (a, b) → <STOP>"]
 
 Kafka -> Cache
 
-Cache[label=<<table cellspacing="5" cellborder="0"  border="0">
+Cache[shape=box,label=<<table cellspacing="5" cellborder="0"  border="0">
         <tr><td colspan="2">Cache</td></tr>
         <tr><td>&lt;STOP&gt;</td>
         <vr/><td>&lt;STOP&gt;</td></tr></table>>]
