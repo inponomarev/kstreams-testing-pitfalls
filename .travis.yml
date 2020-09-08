@@ -1,9 +1,22 @@
 ---
 dist: bionic
 
+addons:
+  apt:
+    packages:
+      - graphviz 
+
 language: java
 jdk: openjdk11
 
 cache:
   directories:
   - $HOME/.m2
+
+deploy:
+  provider: pages
+  skip_cleanup: true
+  github_token: $GH_TOKEN
+  local_dir: slides/target/generated-slides
+  on:
+    branch: master
