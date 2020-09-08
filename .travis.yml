@@ -13,6 +13,8 @@ cache:
   directories:
   - $HOME/.m2
 
+script: mvn -fn clean verify
+
 deploy:
   provider: pages
   skip_cleanup: true
