@@ -30,9 +30,21 @@ include::_doc_general_attributes.adoc[]
 
 == Speakers Introduction
 
-* Slide about John
+Ivan Ponomarev:
+* TODO
+* Apache Kafka Contributor (Improved Branching, Deduplication Operator)
 
-* Slide about Ivan
+John Roesler:
+* Software Engineer at Confluent
+* Apache Kafka Committer and PMC member
+
+== Overview
+
+1. Purpose: cover testing methodologies for Kafka Streams
+2. Start with motivating example (from Ivan's production)
+3. A flawed testing approach: unit testing doesn't work for this example
+4. Deep-dive into the testing framework
+5. Correctly testing the example with integration tests
 
 == The task
 
@@ -237,7 +249,7 @@ A1 -> B1 -> B2 ->A2 ;
 
 A2->Kafka;
 
-Kafka[shape=box,label="reduce \n (a, b) → <STOP>"]
+Kafka[shape=box,label="reduce \n (l, r) → <STOP>"]
 }
 ----
 
@@ -263,7 +275,7 @@ B2[label="B"];
 
 A1 -> B1 -> B2 -> Kafka -> A2 ;
 
-Kafka[shape=box,label="reduce \n (a, b) → <STOP>"]
+Kafka[shape=box,label="reduce \n (l, r) → <STOP>"]
 }
 ----
 
@@ -282,7 +294,7 @@ B2[label="B"];
 A1 -> B1 ->  Kafka -> B2 -> A2 ;
 
 
-Kafka[shape=box,label="reduce \n (a, b) → <STOP>"]
+Kafka[shape=box,label="reduce \n (l, r) → <STOP>"]
 }
 ----
 
@@ -300,7 +312,7 @@ B2[label="B"];
 
 Kafka -> A1 -> B1 -> B2 -> A2 ;
 
-Kafka[shape=box,label="reduce \n (a, b) → <STOP>"]
+Kafka[shape=box,label="reduce \n (l, r) → <STOP>"]
 }
 ----
 
@@ -314,8 +326,48 @@ Kafka[shape=box,label="reduce \n (a, b) → <STOP>"]
 
 * In production it doesn't work
 
+
 == Why it's not working
 
+Kafka Streams is a big data streaming framework
+
+
+TopologyTestDriver is a fast, deterministic testing framework
+
+
+== Why it's not working
+
+Kafka Streams is a big data streaming framework
+* designed for high throughput
+* throughput demands batching, buffering, caching, etc.
+* caching is the culprit in this example
+
+
+TopologyTestDriver is a fast, deterministic testing framework
+
+
+== Why it's not working
+
+Kafka Streams is a big data streaming framework
+* designed for high throughput
+* throughput demands batching, buffering, caching, etc.
+* caching is the culprit in this example
+
+
+TopologyTestDriver is a fast, deterministic testing framework
+* designed for synchronous, immediate results
+* flush cache after every update
+
+== Why it's not working
+
+Caching in Kafka Streams
+* don't immediately emit every aggregation result
+* "soak up" repeated updates to the same key's aggregation
+* configure cache size: `max.bytes.buffering` (10MB)
+* configure cache flush interval: `commit.interval.ms` (30s)
+* emit _latest_ result on flush or eviction
+
+== Why it's not working
 
 [graphviz,"cache1.png"]
 ----
@@ -327,11 +379,11 @@ B1[label="B"];
 A2[label="A"];
 B2[label="B"];
 
-A1 -> B1 -> B2 ->A2 ;
+A1 -> B1 -> B2 -> A2 ;
 
 A2->Kafka;
 
-Kafka[shape=box,label="reduce \n (a, b) → <STOP>"]
+Kafka[shape=box,label="reduce \n (l, r) → <STOP>"]
 
 Kafka -> Cache
 
@@ -343,13 +395,32 @@ Cache[shape=box,label=<<table cellspacing="5" cellborder="0"  border="0">
 ----
 
 
-[.notes]
---
-John: explains how cache works in real Kafka cluster
+== Why it's not working
 
-Explains how TopologyTestDriver works
 
---
+[graphviz,"cache1b.png"]
+----
+digraph G {
+graph [ dpi = 180 ];
+rankdir="LR";
+
+A1[label="A"];
+B1[label="B"];
+B2[label="B"];
+
+A1 -> B1 -> B2 -> Kafka;
+
+Kafka[shape=box,label="reduce \n (l, r) → <STOP>"]
+
+Kafka -> Cache
+
+Cache[shape=box,label=<<table cellspacing="5" cellborder="0"  border="0">
+        <tr><td colspan="2">Cache</td></tr>
+        <tr><td>A</td>
+        <vr/><td> </td></tr></table>>]
+}
+----
+
 
 == Why it's not working
 
@@ -365,7 +436,7 @@ B1[label="B"];
 
 A1 -> B1 ->Kafka;
 
-Kafka[shape=box,label="reduce \n (a, b) → <STOP>"]
+Kafka[shape=box,label="reduce \n (l, r) → <STOP>"]
 
 Kafka -> Cache
 
@@ -380,7 +451,59 @@ Cache[shape=box,label=<<table cellspacing="5" cellborder="0"  border="0">
 == Why it's not working
 
 
+[graphviz,"cache2b.png"]
+----
+digraph G {
+graph [ dpi = 180 ];
+rankdir="LR";
+
+A1[label="A"];
+B1[label="B"];
+
+A1 ->Kafka;
+
+Kafka[shape=box,label="reduce \n (l, r) → <STOP>"]
+
+Kafka -> Cache
+
+Cache[shape=box,label=<<table cellspacing="5" cellborder="0"  border="0">
+        <tr><td colspan="2">Cache</td></tr>
+        <tr><td>A</td>
+        <vr/><td>&lt;STOP&gt;</td></tr></table>>]
+}
+----
+
+
+
+== Why it's not working
+
+
 [graphviz,"cache3.png"]
+----
+digraph G {
+
+graph [ dpi = 180 ];
+rankdir="LR";
+
+Kafka;
+
+Kafka[shape=box,label="reduce \n (l, r) → <STOP>"]
+
+Kafka -> Cache
+
+Cache[shape=box,label=<<table cellspacing="5" cellborder="0"  border="0">
+        <tr><td colspan="2">Cache</td></tr>
+        <tr><td>&lt;STOP&gt;</td>
+        <vr/><td>&lt;STOP&gt;</td></tr></table>>]
+
+
+}
+----
+
+== Why it's not working
+
+
+[graphviz,"cache3b.png"]
 ----
 digraph G {
 
@@ -391,14 +514,14 @@ B1[label="<STOP>"];
 
 Kafka;
 
-Kafka[shape=box,label="reduce \n (a, b) → <STOP>"]
+Kafka[shape=box,label="reduce \n (l, r) → <STOP>"]
 
 Kafka -> Cache
 
 Cache[shape=box,label=<<table cellspacing="5" cellborder="0"  border="0">
         <tr><td colspan="2">Cache</td></tr>
-        <tr><td>&lt;STOP&gt;</td>
-        <vr/><td>&lt;STOP&gt;</td></tr></table>>]
+        <tr><td> </td>
+        <vr/><td> </td></tr></table>>]
 Cache -> B1 -> A1;
 
 
