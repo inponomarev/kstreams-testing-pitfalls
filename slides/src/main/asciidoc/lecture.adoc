@@ -31,10 +31,12 @@ include::_doc_general_attributes.adoc[]
 == Speakers Introduction
 
 Ivan Ponomarev:
-* TODO
-* Apache Kafka Contributor (Improved Branching, Deduplication Operator)
+
+* Software Engineer at KURS, tutor at MIPT
+* Apache Kafka Contributor
 
 John Roesler:
+
 * Software Engineer at Confluent
 * Apache Kafka Committer and PMC member
 
@@ -348,19 +350,22 @@ TopologyTestDriver is a fast, deterministic testing framework
 
 == Why it's not working
 
-Kafka Streams is a big data streaming framework
+*Kafka Streams* is a big data streaming framework
+
 * designed for high throughput
 * throughput demands batching, buffering, caching, etc.
 * caching is the culprit in this example
 
 
-TopologyTestDriver is a fast, deterministic testing framework
+*TopologyTestDriver* is a fast, deterministic testing framework
+
 * designed for synchronous, immediate results
 * flush cache after every update
 
 == Why it's not working
 
 Caching in Kafka Streams
+
 * don't immediately emit every aggregation result
 * "soak up" repeated updates to the same key's aggregation
 * configure cache size: `max.bytes.buffering` (10MB)
@@ -458,7 +463,6 @@ graph [ dpi = 180 ];
 rankdir="LR";
 
 A1[label="A"];
-B1[label="B"];
 
 A1 ->Kafka;
 
