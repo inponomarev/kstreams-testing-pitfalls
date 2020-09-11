@@ -331,21 +331,21 @@ Kafka[shape=box,label="reduce \n (l, r) → <STOP>"]
 
 == Why it's not working
 
-Kafka Streams is a big data streaming framework
+*Kafka Streams* is a big data streaming framework
 
 
-TopologyTestDriver is a fast, deterministic testing framework
+*TopologyTestDriver* is a fast, deterministic testing framework
 
 
 == Why it's not working
 
-Kafka Streams is a big data streaming framework
+*Kafka Streams* is a big data streaming framework
+
 * designed for high throughput
 * throughput demands batching, buffering, caching, etc.
 * caching is the culprit in this example
 
-
-TopologyTestDriver is a fast, deterministic testing framework
+*TopologyTestDriver* is a fast, deterministic testing framework
 
 
 == Why it's not working
