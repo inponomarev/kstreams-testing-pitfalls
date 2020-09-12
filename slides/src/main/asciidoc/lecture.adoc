@@ -249,9 +249,19 @@ B2[label="B"];
 
 A1 -> B1 -> B2 ->A2 ;
 
-A2->Kafka;
+A2->Reduce;
 
-Kafka[shape=box,label="reduce \n (l, r) → <STOP>"]
+Reduce[shape=box,label="reduce \n (l, r) → <STOP>"];
+
+Store[shape=cylinder,label=<<table cellspacing="5" cellborder="0"  border="0">
+        <tr><td colspan="2">Local Store</td></tr>
+        <tr><td> </td><td> </td></tr>
+        </table>>];
+
+Reduce->Store;
+
+{rank = same; Store; Reduce; }
+
 }
 ----
 
@@ -275,9 +285,20 @@ B1[label="B"];
 A2[label="A"];
 B2[label="B"];
 
-A1 -> B1 -> B2 -> Kafka -> A2 ;
+A1 -> B1 -> B2 -> Reduce -> A2 ;
 
-Kafka[shape=box,label="reduce \n (l, r) → <STOP>"]
+Reduce[shape=box,label="reduce \n (l, r) → <STOP>"];
+
+Store[shape=cylinder,label=<<table cellspacing="5" cellborder="0"  border="0">
+        <tr><td colspan="2">Local Store</td></tr>
+        <tr><td>A</td><vr/><td>A</td></tr>
+        </table>>];
+
+Reduce->Store;
+
+{rank = same; Store; Reduce; }
+
+
 }
 ----
 
@@ -293,10 +314,21 @@ B1[label="B"];
 A2[label="A"];
 B2[label="B"];
 
-A1 -> B1 ->  Kafka -> B2 -> A2 ;
+A1 -> B1 ->  Reduce -> B2 -> A2 ;
 
 
-Kafka[shape=box,label="reduce \n (l, r) → <STOP>"]
+Reduce[shape=box,label="reduce \n (l, r) → <STOP>"];
+
+Store[shape=cylinder,label=<<table cellspacing="5" cellborder="0"  border="0">
+        <tr><td colspan="2">Local Store</td></tr>
+        <tr><td>A</td><vr/><td>A</td></tr>
+        <tr><td>B</td><vr/><td>B</td></tr>
+        </table>>];
+
+Reduce->Store;
+
+{rank = same; Store; Reduce; }
+
 }
 ----
 
@@ -307,14 +339,54 @@ Kafka[shape=box,label="reduce \n (l, r) → <STOP>"]
 digraph G {
 graph [ dpi = 180 ];
 rankdir="LR";
+A1[label="A"];
+B1[label="<STOP>"];
+A2[label="A"];
+B2[label="B"];
+
+A1 -> Reduce -> B1 -> B2 -> A2 ;
+
+Reduce[shape=box,label="reduce \n (l, r) → <STOP>"]
+
+Store[shape=cylinder,label=<<table cellspacing="5" cellborder="0"  border="0">
+        <tr><td colspan="2">Local Store</td></tr>
+        <tr><td>A</td><vr/><td>A</td></tr>
+        <tr><td>B</td><vr/><td>&lt;STOP&gt;</td></tr>
+        </table>>];
+
+Reduce->Store;
+
+{rank = same; Store; Reduce; }
+
+}
+----
+
+== A "Simple Solution"
+
+[graphviz,"wrong-topology5.png"]
+----
+digraph G {
+graph [ dpi = 180 ];
+rankdir="LR";
 A1[label="<STOP>"];
 B1[label="<STOP>"];
 A2[label="A"];
 B2[label="B"];
 
-Kafka -> A1 -> B1 -> B2 -> A2 ;
+Reduce -> A1 -> B1 -> B2 -> A2 ;
 
-Kafka[shape=box,label="reduce \n (l, r) → <STOP>"]
+Reduce[shape=box,label="reduce \n (l, r) → <STOP>"]
+
+Store[shape=cylinder,label=<<table cellspacing="5" cellborder="0"  border="0">
+        <tr><td colspan="2">Local Store</td></tr>
+        <tr><td>A</td><vr/><td>&lt;STOP&gt;</td></tr>
+        <tr><td>B</td><vr/><td>&lt;STOP&gt;</td></tr>
+        </table>>];
+
+Reduce->Store;
+
+{rank = same; Store; Reduce; }
+
 }
 ----
 
@@ -386,11 +458,11 @@ B2[label="B"];
 
 A1 -> B1 -> B2 -> A2 ;
 
-A2->Kafka;
+A2->Reduce;
 
-Kafka[shape=box,label="reduce \n (l, r) → <STOP>"]
+Reduce[shape=box,label="reduce \n (l, r) → <STOP>"]
 
-Kafka -> Cache
+Reduce -> Cache
 
 Cache[shape=box,label=<<table cellspacing="5" cellborder="0"  border="0">
         <tr><td colspan="2">Cache</td></tr>
@@ -413,11 +485,11 @@ A1[label="A"];
 B1[label="B"];
 B2[label="B"];
 
-A1 -> B1 -> B2 -> Kafka;
+A1 -> B1 -> B2 -> Reduce;
 
-Kafka[shape=box,label="reduce \n (l, r) → <STOP>"]
+Reduce[shape=box,label="reduce \n (l, r) → <STOP>"]
 
-Kafka -> Cache
+Reduce -> Cache
 
 Cache[shape=box,label=<<table cellspacing="5" cellborder="0"  border="0">
         <tr><td colspan="2">Cache</td></tr>
@@ -439,11 +511,11 @@ rankdir="LR";
 A1[label="A"];
 B1[label="B"];
 
-A1 -> B1 ->Kafka;
+A1 -> B1 ->Reduce;
 
-Kafka[shape=box,label="reduce \n (l, r) → <STOP>"]
+Reduce[shape=box,label="reduce \n (l, r) → <STOP>"];
 
-Kafka -> Cache
+Reduce -> Cache;
 
 Cache[shape=box,label=<<table cellspacing="5" cellborder="0"  border="0">
         <tr><td colspan="2">Cache</td></tr>
@@ -464,11 +536,11 @@ rankdir="LR";
 
 A1[label="A"];
 
-A1 ->Kafka;
+A1 ->Reduce;
 
-Kafka[shape=box,label="reduce \n (l, r) → <STOP>"]
+Reduce[shape=box,label="reduce \n (l, r) → <STOP>"]
 
-Kafka -> Cache
+Reduce -> Cache
 
 Cache[shape=box,label=<<table cellspacing="5" cellborder="0"  border="0">
         <tr><td colspan="2">Cache</td></tr>
@@ -489,11 +561,9 @@ digraph G {
 graph [ dpi = 180 ];
 rankdir="LR";
 
-Kafka;
+Reduce[shape=box,label="reduce \n (l, r) → <STOP>"];
 
-Kafka[shape=box,label="reduce \n (l, r) → <STOP>"]
-
-Kafka -> Cache
+Reduce -> Cache;
 
 Cache[shape=box,label=<<table cellspacing="5" cellborder="0"  border="0">
         <tr><td colspan="2">Cache</td></tr>
@@ -516,11 +586,11 @@ rankdir="LR";
 A1[label="<STOP>"];
 B1[label="<STOP>"];
 
-Kafka;
+Reduce;
 
-Kafka[shape=box,label="reduce \n (l, r) → <STOP>"]
+Reduce[shape=box,label="reduce \n (l, r) → <STOP>"]
 
-Kafka -> Cache
+Reduce -> Cache
 
 Cache[shape=box,label=<<table cellspacing="5" cellborder="0"  border="0">
         <tr><td colspan="2">Cache</td></tr>
