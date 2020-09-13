@@ -28,7 +28,7 @@ include::_doc_general_attributes.adoc[]
 :!figure-caption:
 
 
-== Speakers Introduction
+== Who Are We
 
 Ivan Ponomarev:
 
@@ -40,6 +40,13 @@ John Roesler:
 * Software Engineer at Confluent
 * Apache Kafka Committer and PMC member
 
+[.notes]
+--
+John introduces Ivan
+
+Ivan introduces John
+--
+
 == Overview
 
 1. Purpose: cover testing methodologies for Kafka Streams
@@ -47,6 +54,11 @@ John Roesler:
 3. A flawed testing approach: unit testing doesn't work for this example
 4. Deep-dive into the testing framework
 5. Correctly testing the example with integration tests
+
+[.notes]
+--
+John gives an overview of the talk
+--
 
 == The task
 
@@ -608,6 +620,8 @@ Cache -> B1 -> A1;
 
 * TestContainers
 
+image::testcontainers.png[{image-40-width}]
+
 == EmbeddedKafka vs TestContainers
 
 [cols="50a,50a"]
@@ -642,7 +656,7 @@ Cache -> B1 -> A1;
 
 [.notes]
 --
-Writing the first attempt (with Thread.sleep)
+Writing the first attempt (with `poll` inside `while` loop)
 
 This test should be red
 --
@@ -674,7 +688,7 @@ while (true) {
   }
 }
   
-assertEquals(List.of("A", "B", "C"), actual);
+assertEquals(List.of("A", "B"), actual);
 -----
 
 == Awaitility
@@ -682,7 +696,7 @@ assertEquals(List.of("A", "B", "C"), actual);
 [source,java]
 -----
 Awaitility.await().atMost(10, SECONDS).until(
-         	() -> List.of("A", "B", "C").equals(actual));
+         	() -> List.of("A", "B",).equals(actual));
 -----
 
 == Things we must keep in mind
@@ -693,6 +707,15 @@ Awaitility.await().atMost(10, SECONDS).until(
 == Demo
 
 * Green test runs faster
+
+== Will any extra messages appear?
+
+* We can wait for extra 5 seconds (bad choice)
+* We can put a 'marker record' at the end of the input and wait for it to appear in the output (not always possible)  
+
+== KIP-655 is under discussion
+
+image::kip-655.png[{image-80-width}]
 
 == Summary
 
