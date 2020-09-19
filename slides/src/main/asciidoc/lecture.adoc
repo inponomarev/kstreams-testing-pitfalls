@@ -199,11 +199,11 @@ TestOutputTopic<String, String> outputTopic =
 
 == `TopologyTestDriver` capabilities
 
-[cols="30a,35a,35a"]
+[cols="24a,38a,38a"]
 |===
-|What is being sent/received 	
-|TestInputTopic methods 	
-|TestOutputTopic methods
+|*What is being sent/received* 	
+|*TestInputTopic methods* 	
+|*TestOutputTopic methods*
 |A single value 	
 |`pipeInput (V)` 	
 |`V readValue ()`
@@ -215,11 +215,11 @@ TestOutputTopic<String, String> outputTopic =
 
 == `TopologyTestDriver` capabilities
 
-[cols="30a,35a,35a"]
+[cols="24a,38a,38a"]
 |===
-|What is being sent/received 	
-|TestInputTopic methods 	
-|TestOutputTopic methods
+|*What is being sent/received* 	
+|*TestInputTopic methods* 	
+|*TestOutputTopic methods*
 |A list of values 	
 |`pipeValueList (List<V>)` 	
 |`List<V>
@@ -237,10 +237,13 @@ readRecordsToList()`
 
 == `TopologyTestDriver` capabilities: Timestamp emulation
 
-[cols="50a,50a"]
+image::mantelpiece-clock.png[]
+
+
+[cols="40a,60a"]
 |===
-|What is being sent 	
-|TestInputTopic methods
+|*What is being sent*	
+|*TestInputTopic methods*
 |A value or a key/value pair with a given timestamp 	|`pipeInput(V, Instant)`
 
 `pipeInput(K, V, Instant)`
