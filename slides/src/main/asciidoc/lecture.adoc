@@ -35,6 +35,14 @@ Ivan Ponomarev:
 * Software Engineer at KURS, tutor at MIPT
 * Apache Kafka Contributor
 
+
+[.notes]
+--
+John introduces Ivan
+--
+
+== Who Are We
+
 John Roesler:
 
 * Software Engineer at Confluent
@@ -42,8 +50,6 @@ John Roesler:
 
 [.notes]
 --
-John introduces Ivan
-
 Ivan introduces John
 --
 
@@ -410,7 +416,9 @@ Reduce->Store;
 
 == Should we run this in production?
 
-* In production it doesn't work
+image::collision.png[]
+
+In production it doesn't work
 
 
 == Why it's not working
@@ -480,6 +488,14 @@ Cache[shape=box,label=<<table cellspacing="5" cellborder="0"  border="0">
         <tr><td colspan="2">Cache</td></tr>
         <tr><td> </td>
         <td> </td></tr></table>>]
+        
+Store[shape=cylinder,label=<<table cellspacing="5" cellborder="0"  border="0">
+        <tr><td colspan="2">Local Store</td></tr>
+        <tr><td> </td><td> </td></tr>
+        </table>>];
+        
+Cache -> Store;
+{rank = same; Store; Cache; }
 }
 ----
 
@@ -506,7 +522,14 @@ Reduce -> Cache
 Cache[shape=box,label=<<table cellspacing="5" cellborder="0"  border="0">
         <tr><td colspan="2">Cache</td></tr>
         <tr><td>A</td>
-        <vr/><td> </td></tr></table>>]
+        <vr/><td>A</td></tr></table>>];
+Store[shape=cylinder,label=<<table cellspacing="5" cellborder="0"  border="0">
+        <tr><td colspan="2">Local Store</td></tr>
+        <tr><td> </td><td> </td></tr>
+        </table>>];
+        
+Cache -> Store;
+{rank = same; Store; Cache; }
 }
 ----
 
@@ -531,8 +554,16 @@ Reduce -> Cache;
 
 Cache[shape=box,label=<<table cellspacing="5" cellborder="0"  border="0">
         <tr><td colspan="2">Cache</td></tr>
-        <tr><td>A</td>
-        <vr/><td>B</td></tr></table>>]
+        <tr><td>A</td><vr/><td>A</td></tr>
+        <tr><td>B</td><vr/><td>B</td></tr>
+        </table>>]
+Store[shape=cylinder,label=<<table cellspacing="5" cellborder="0"  border="0">
+        <tr><td colspan="2">Local Store</td></tr>
+        <tr><td> </td><td> </td></tr>
+        </table>>];
+        
+Cache -> Store;
+{rank = same; Store; Cache; }
 }
 ----
 
@@ -556,8 +587,16 @@ Reduce -> Cache
 
 Cache[shape=box,label=<<table cellspacing="5" cellborder="0"  border="0">
         <tr><td colspan="2">Cache</td></tr>
-        <tr><td>A</td>
-        <vr/><td>&lt;STOP&gt;</td></tr></table>>]
+        <tr><td>A</td><vr/><td>A</td></tr>
+        <tr><td>B</td><vr/><td>&lt;STOP&gt;</td></tr>
+        </table>>];
+Store[shape=cylinder,label=<<table cellspacing="5" cellborder="0"  border="0">
+        <tr><td colspan="2">Local Store</td></tr>
+        <tr><td> </td><td> </td></tr>
+        </table>>];
+        
+Cache -> Store;
+{rank = same; Store; Cache; }
 }
 ----
 
@@ -579,9 +618,17 @@ Reduce -> Cache;
 
 Cache[shape=box,label=<<table cellspacing="5" cellborder="0"  border="0">
         <tr><td colspan="2">Cache</td></tr>
-        <tr><td>&lt;STOP&gt;</td>
-        <vr/><td>&lt;STOP&gt;</td></tr></table>>]
+        <tr><td>A</td><vr/><td>&lt;STOP&gt;</td></tr>
+        <tr><td>B</td><vr/><td>&lt;STOP&gt;</td></tr>
+        </table>>]
 
+Store[shape=cylinder,label=<<table cellspacing="5" cellborder="0"  border="0">
+        <tr><td colspan="2">Local Store</td></tr>
+        <tr><td> </td><td> </td></tr>
+        </table>>];
+        
+Cache -> Store;
+{rank = same; Store; Cache; }
 
 }
 ----
@@ -606,11 +653,67 @@ Reduce -> Cache
 
 Cache[shape=box,label=<<table cellspacing="5" cellborder="0"  border="0">
         <tr><td colspan="2">Cache</td></tr>
-        <tr><td> </td>
-        <vr/><td> </td></tr></table>>]
+        <tr><td> </td><td> </td></tr>
+        </table>>]
 Cache -> B1 -> A1;
 
+Store[shape=cylinder,label=<<table cellspacing="5" cellborder="0"  border="0">
+        <tr><td colspan="2">Local Store</td></tr>
+        <tr><td>A</td><vr/><td>&lt;STOP&gt;</td></tr>
+        <tr><td>B</td><vr/><td>&lt;STOP&gt;</td></tr>
+        </table>>];
+        
+Cache -> Store;
+{rank = same; Store; Cache; }
 
+A1->surprised[style=invis];
+{rank = same; A1; surprised; }
+
+surprised[shape="none",label="",
+   image="slides/src/main/asciidoc/images/surprised.png"];
+}
+----
+
+== Demo
+
+TopologyTestDriver vs. Kafka Streams execution loop
+
+== Should we trust StackOverflow?
+
+image::so.png[{image-90-width}]
+
+== Using Transformer
+
+[graphviz,"transformer.png"]
+----
+digraph G {
+graph [ dpi = 180 ];
+rankdir="LR";
+
+A1[label="A"];
+B1[label="B"];
+A2[label="A"];
+B2[label="B"];
+
+A1 -> B1 -> Transformer -> B2 -> A2;
+
+Transformer[shape=box,label="ValueTransformerWithKey"];
+
+Transformer -> Cache;
+
+Cache[shape=box,label=<<table cellspacing="5" cellborder="0"  border="0">
+        <tr><td colspan="2">Cache</td></tr>
+        <tr><td>A</td><vr/><td>A</td></tr>
+        <tr><td>B</td><vr/><td>B</td></tr>
+        </table>>]
+Store[shape=cylinder,label=<<table cellspacing="5" cellborder="0"  border="0">
+        <tr><td colspan="2">Local Store</td></tr>
+        <tr><td> </td><td> </td></tr>
+        </table>>];
+        
+Cache -> Store;
+
+{rank = same; Transformer; Store; Cache; }
 }
 ----
 
@@ -620,7 +723,7 @@ Cache -> B1 -> A1;
 
 * TestContainers
 
-image::testcontainers.png[{image-40-width}]
+image::testcontainers.png[{image-30-width}]
 
 == EmbeddedKafka vs TestContainers
 
@@ -698,6 +801,54 @@ assertEquals(List.of("A", "B"), actual);
 Awaitility.await().atMost(10, SECONDS).until(
          	() -> List.of("A", "B",).equals(actual));
 -----
+
+[plantuml, awaitility-pass, png]
+----
+@startuml
+!pragma teoz true
+skinparam dpi 180
+hide footbox
+-> Awaitility: until
+activate Awaitility
+{start} Awaitility -> conditionEvaluator: call                                               .
+conditionEvaluator --> Awaitility: false
+...
+
+Awaitility -> conditionEvaluator: call
+{end} conditionEvaluator --> Awaitility: **true**
+{start} <-> {end} : < 10 s
+<-- Awaitility
+deactivate Awaitility
+@enduml
+----
+
+== Awaitility
+
+[source,java]
+-----
+Awaitility.await().atMost(10, SECONDS).until(
+         	() -> List.of("A", "B",).equals(actual));
+-----
+[plantuml, awaitility-fail, png]
+----
+@startuml
+!pragma teoz true
+skinparam dpi 180
+hide footbox
+-> Awaitility: until
+activate Awaitility
+{start} Awaitility -> conditionEvaluator: call                                               .
+conditionEvaluator --> Awaitility: false
+...
+
+Awaitility -> conditionEvaluator: call
+{end} conditionEvaluator --> Awaitility: **false**
+{start} <-> {end} : > 10 s
+[x<-- Awaitility: ConditionTimeoutException
+deactivate Awaitility
+@enduml
+----
+
 
 == Things we must keep in mind
 
