@@ -802,7 +802,7 @@ assertEquals(List.of("A", "B"), actual);
 [source,java]
 -----
 Awaitility.await().atMost(10, SECONDS).until(
-         	() -> List.of("A", "B",).equals(actual));
+         	() -> List.of("A", "B").equals(actual));
 -----
 
 [plantuml, awaitility-pass, png]
@@ -830,7 +830,7 @@ deactivate Awaitility
 [source,java]
 -----
 Awaitility.await().atMost(10, SECONDS).until(
-         	() -> List.of("A", "B",).equals(actual));
+         	() -> List.of("A", "B").equals(actual));
 -----
 [plantuml, awaitility-fail, png]
 ----
