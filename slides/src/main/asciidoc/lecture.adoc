@@ -30,11 +30,15 @@ include::_doc_general_attributes.adoc[]
 
 == Who Are We
 
+[cols="20a,80a"]
+|===
+|image::ivan.jpg[]
+|
 Ivan Ponomarev:
 
 * Software Engineer at KURS, tutor at MIPT
 * Apache Kafka Contributor
-
+|===
 
 [.notes]
 --
@@ -43,10 +47,15 @@ John introduces Ivan
 
 == Who Are We
 
+[cols="20a,80a"]
+|===
+| image::john.jpg[]
+|
 John Roesler:
 
 * Software Engineer at Confluent
 * Apache Kafka Committer and PMC member
+|===
 
 [.notes]
 --
