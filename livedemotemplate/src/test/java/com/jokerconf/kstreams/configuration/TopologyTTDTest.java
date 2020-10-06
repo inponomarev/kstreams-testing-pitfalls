@@ -31,11 +31,15 @@ public class TopologyTTDTest {
     void setUp() {
         StreamsBuilder sb = new StreamsBuilder();
         Properties properties = new KafkaConfiguration(new KafkaProperties()).getStreamsConfig().asProperties();
-        //TODO
+        testDriver = new TopologyTestDriver(new TopologyConfiguration().createTopology(sb), properties);
+        inputTopic = testDriver.createInputTopic(TopicsConfiguration.INPUT_TOPIC_1, new StringSerializer(), new StringSerializer());
+        outputTopic = testDriver.createOutputTopic(TopicsConfiguration.OUTPUT_TOPIC_1, new StringDeserializer(), new StringDeserializer());
     }
 
-    //TODO: tearDown
+    @AfterEach
+    void tearDown() {
+        testDriver.close();
+    }
 
-    //TODO: testDeduplicationTopology
-
+    
 }
