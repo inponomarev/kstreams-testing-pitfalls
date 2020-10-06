@@ -713,13 +713,91 @@ TopologyTestDriver vs. Kafka Streams execution loop
 ** flush caches
 ** re-enqueue internal "topic" results
 
+== Other problems that can't be surfaced with `TopologyTestDriver`
+
+* "Single partition" -- everything related to co-partitioning
+* "Fused" subtopologies -- everything related to repartition operations
+* Timing: 
+** stream-stream joins can behave differently
+** logic that depends on stream time (such as `suppress`) can behave differently
+
 == Should we trust StackOverflow?
 
 image::so.png[{image-90-width}]
 
 == Using Transformer
 
-[graphviz,"transformer.png"]
+[graphviz,"transformer1.png"]
+----
+digraph G {
+graph [ dpi = 180 ];
+rankdir="LR";
+
+A1[label="A"];
+B1[label="B"];
+A2[label="A"];
+B2[label="B"];
+
+A1 -> B1 -> B2 -> A2 -> Transformer ;
+
+Transformer[shape=box,label="ValueTransformerWithKey"];
+
+Transformer -> Cache;
+
+Cache[shape=box,label=<<table cellspacing="5" cellborder="0"  border="0">
+        <tr><td colspan="2">Cache</td></tr>
+        <tr><td></td><vr/><td></td></tr>
+        <tr><td></td><vr/><td></td></tr>
+        </table>>]
+Store[shape=cylinder,label=<<table cellspacing="5" cellborder="0"  border="0">
+        <tr><td colspan="2">Local Store</td></tr>
+        <tr><td> </td><td> </td></tr>
+        </table>>];
+        
+Cache -> Store;
+
+{rank = same; Transformer; Store; Cache; }
+}
+----
+
+== Using Transformer
+
+[graphviz,"transformer2.png"]
+----
+digraph G {
+graph [ dpi = 180 ];
+rankdir="LR";
+
+A1[label="A"];
+B1[label="B"];
+A2[label="A"];
+B2[label="B"];
+
+A1 -> B1 -> B2  -> Transformer -> A2;
+
+Transformer[shape=box,label="ValueTransformerWithKey"];
+
+Transformer -> Cache;
+
+Cache[shape=box,label=<<table cellspacing="5" cellborder="0"  border="0">
+        <tr><td colspan="2">Cache</td></tr>
+        <tr><td>A</td><vr/><td>A</td></tr>
+        <tr><td></td><vr/><td></td></tr>
+        </table>>]
+Store[shape=cylinder,label=<<table cellspacing="5" cellborder="0"  border="0">
+        <tr><td colspan="2">Local Store</td></tr>
+        <tr><td> </td><td> </td></tr>
+        </table>>];
+        
+Cache -> Store;
+
+{rank = same; Transformer; Store; Cache; }
+}
+----
+
+== Using Transformer
+
+[graphviz,"transformer4.png"]
 ----
 digraph G {
 graph [ dpi = 180 ];
