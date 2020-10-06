@@ -690,6 +690,29 @@ surprised[shape="none",label="",
 
 TopologyTestDriver vs. Kafka Streams execution loop
 
+== Kafka Streams execution loop
+
+`StreamThread#runLoop()`
+
+* poll
+* initialize/restore (idempotent)
+* process (batch) (cached)
+* punctuate
+* flush caches
+* commit
+
+== TopologyTestDriver execution loop
+
+`TopologyTestDriver#pipeRecord`
+
+* enqueue
+* while queue not empty:
+** dequeue record
+** process
+** punctuate
+** flush caches
+** re-enqueue internal "topic" results
+
 == Should we trust StackOverflow?
 
 image::so.png[{image-90-width}]
