@@ -426,11 +426,16 @@ Reduce->Store;
 * writing the topology
 * TopologyTestDriver test is green
 
-== Should we run this in production?
+== Tests are green
 
-image::collision.png[]
+image::build.svg[{image-20-width}]
 
-In production it doesn't work
+
+Should we run this in production?
+
+== What we saw in production:
+
+image::monitoring.png[]
 
 
 == Why it's not working
