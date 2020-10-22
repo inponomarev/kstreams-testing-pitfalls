@@ -294,9 +294,25 @@ readValuesToList()`
 digraph G {
   rankdir="LR";
   graph [ dpi = 180 ];
-  source [shape=record;label="{K|V|Headers|Timestamp}|{K|V|Headers|Timestamp}|{K|V|Headers|Timestamp}"];
+  source [shape=none;
+  label=<<table cellborder="0" padding="0" border="1">
+  <tr><td>K</td><vr/><td>V</td><vr/><td>Headers</td><vr/><td><IMG SCALE="BOTH" SRC="slides/src/main/asciidoc/images/mantelpiece-clock.png"/></td></tr>
+  <hr/>
+  <tr><td>K</td><vr/><td>V</td><vr/><td>Headers</td><vr/><td><IMG SCALE="BOTH" SRC="slides/src/main/asciidoc/images/mantelpiece-clock.png"/></td></tr>
+  <hr/>
+  <tr><td>K</td><vr/><td>V</td><vr/><td>Headers</td><vr/><td><IMG SCALE="BOTH" SRC="slides/src/main/asciidoc/images/stopwatch.png"/></td></tr>
+  </table>>;
+  ];
   processor [shape="septagon"; label="\nTopology\n "];
-  sink [shape=record;label="{K|V|Headers|Timestamp}|{K|V|Headers|Timestamp}|{K|V|Headers|Timestamp}"];
+  sink [shape=none;
+  label=<<table cellborder="0" padding="0" border="1">
+  <tr><td>K</td><vr/><td>V</td><vr/><td>Headers</td><vr/><td><IMG SCALE="BOTH" SRC="slides/src/main/asciidoc/images/stopwatch.png"/></td></tr>
+  <hr/>
+  <tr><td>K</td><vr/><td>V</td><vr/><td>Headers</td><vr/><td><IMG SCALE="BOTH" SRC="slides/src/main/asciidoc/images/stopwatch.png"/></td></tr>
+  <hr/>
+  <tr><td>K</td><vr/><td>V</td><vr/><td>Headers</td><vr/><td><IMG SCALE="BOTH" SRC="slides/src/main/asciidoc/images/mantelpiece-clock.png"/></td></tr>
+  </table>>;
+  ];
   source->processor[label="pipeRecordList\l (List<? extends\l TestRecord<K, V>>)";fontname="Courier"];
   processor->sink[label="readRecordsToList()";fontname="Courier"];
 }
@@ -500,46 +516,31 @@ Reduce->Store;
 
 image::build.svg[{image-20-width}]
 
-
+[.fragment]
 Should we run this in production?
 
 == What we saw in production:
 
 image::monitoring.png[]
 
-
 == Why it's not working
 
-*Kafka Streams* is a big data streaming framework
-
-
-*TopologyTestDriver* is a fast, deterministic testing framework
-
-
-== Why it's not working
-
-*Kafka Streams* is a big data streaming framework
-
+[cols="50a,50a"]
+|===
+| *Kafka Streams*
+| *TopologyTestDriver* 
+|
+is a big data streaming framework
+[%step]
 * designed for high throughput
 * throughput demands batching, buffering, caching, etc.
 * caching is the culprit in this example
-
-*TopologyTestDriver* is a fast, deterministic testing framework
-
-
-== Why it's not working
-
-*Kafka Streams* is a big data streaming framework
-
-* designed for high throughput
-* throughput demands batching, buffering, caching, etc.
-* caching is the culprit in this example
-
-
-*TopologyTestDriver* is a fast, deterministic testing framework
-
+|
+is a fast, deterministic testing framework
+[%step]
 * designed for synchronous, immediate results
 * flush cache after every update
+|===
 
 == Why it's not working
 
