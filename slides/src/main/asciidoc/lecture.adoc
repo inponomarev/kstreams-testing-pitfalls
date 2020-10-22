@@ -214,7 +214,6 @@ TestInputTopic<String, String> inputTopic =
   topologyTestDriver.createInputTopic(
     INPUT_TOPIC, new StringSerializer(), new StringSerializer());
 
-
 TestOutputTopic<String, String> outputTopic =
   topologyTestDriver.createOutputTopic(
     OUTPUT_TOPIC, new StringDeserializer(), new StringDeserializer());
@@ -278,7 +277,7 @@ digraph G {
 |`List<V>
 readValuesToList()`
 |A list of key/value pairs 	
-|`pipeKeyValueList(List<KeyValue<K,V>>)` 	
+|`pipeKeyValueList (List<KeyValue<K,V>>)` 	
 |`List<KeyValue<K,V>> readKeyValuesToList()`
 
 `Map<K,V> readKeyValuesToMap()`
@@ -365,7 +364,7 @@ B2[label="B"];
 
 A1 -> B1 -> B2 ->A2 ;
 
-A2->Reduce;
+A2->Reduce ;
 
 Reduce[shape=box,label="reduce \n (l, r) → <STOP>"];
 
@@ -377,6 +376,15 @@ Store[shape=cylinder,label=<<table cellspacing="5" cellborder="0"  border="0">
 Reduce->Store;
 
 {rank = same; Store; Reduce; }
+
+#padding with invisible nodes
+Reduce->D1->D2->S1->S2[style="invis"];
+D1[label="A", style="invis"];
+D2[label="A", style="invis"];
+S1[label="<STOP>", style="invis"];
+S2[label="<STOP>", style="invis"];
+
+
 
 }
 ----
@@ -414,6 +422,15 @@ Reduce->Store;
 
 {rank = same; Store; Reduce; }
 
+#padding with invisible nodes
+D1->A1[style="invis"];
+A2->D2->S1->S2[style="invis"];
+D1[label="A", style="invis"];
+D2[label="A", style="invis"];
+S1[label="<STOP>", style="invis"];
+S2[label="<STOP>", style="invis"];
+
+
 
 }
 ----
@@ -445,7 +462,16 @@ Reduce->Store;
 
 {rank = same; Store; Reduce; }
 
+#padding with invisible nodes
+D1->D2->A1[style="invis"];
+A2->S1->S2[style="invis"];
+D1[label="A", style="invis"];
+D2[label="A", style="invis"];
+S1[label="<STOP>", style="invis"];
+S2[label="<STOP>", style="invis"];
+
 }
+
 ----
 
 == A "Simple Solution"
@@ -473,6 +499,14 @@ Store[shape=cylinder,label=<<table cellspacing="5" cellborder="0"  border="0">
 Reduce->Store;
 
 {rank = same; Store; Reduce; }
+
+#padding with invisible nodes
+D1->D2->S1->A1[style="invis"];
+A2->S2[style="invis"];
+D1[label="A", style="invis"];
+D2[label="A", style="invis"];
+S1[label="A", style="invis"];
+S2[label="<STOP>", style="invis"];
 
 }
 ----
@@ -503,6 +537,12 @@ Reduce->Store;
 
 {rank = same; Store; Reduce; }
 
+#padding with invisible nodes
+D1->D2->S1->S2->Reduce[style="invis"];
+D1[label="A", style="invis"];
+D2[label="A", style="invis"];
+S1[label="A", style="invis"];
+S2[label="A", style="invis"];
 }
 ----
 
