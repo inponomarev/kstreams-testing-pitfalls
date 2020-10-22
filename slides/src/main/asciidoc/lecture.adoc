@@ -295,9 +295,9 @@ digraph G {
   graph [ dpi = 180 ];
   source [shape=none;
   label=<<table cellborder="0" padding="0" border="1">
-  <tr><td>K</td><vr/><td>V</td><vr/><td>Headers</td><vr/><td><IMG SCALE="BOTH" SRC="slides/src/main/asciidoc/images/mantelpiece-clock.png"/></td></tr>
+  <tr><td>K</td><vr/><td>V</td><vr/><td>Headers</td><vr/><td><IMG SCALE="BOTH" SRC="slides/src/main/asciidoc/images/stopwatch.png"/></td></tr>
   <hr/>
-  <tr><td>K</td><vr/><td>V</td><vr/><td>Headers</td><vr/><td><IMG SCALE="BOTH" SRC="slides/src/main/asciidoc/images/mantelpiece-clock.png"/></td></tr>
+  <tr><td>K</td><vr/><td>V</td><vr/><td>Headers</td><vr/><td><IMG SCALE="BOTH" SRC="slides/src/main/asciidoc/images/stopwatch.png"/></td></tr>
   <hr/>
   <tr><td>K</td><vr/><td>V</td><vr/><td>Headers</td><vr/><td><IMG SCALE="BOTH" SRC="slides/src/main/asciidoc/images/stopwatch.png"/></td></tr>
   </table>>;
@@ -309,7 +309,7 @@ digraph G {
   <hr/>
   <tr><td>K</td><vr/><td>V</td><vr/><td>Headers</td><vr/><td><IMG SCALE="BOTH" SRC="slides/src/main/asciidoc/images/stopwatch.png"/></td></tr>
   <hr/>
-  <tr><td>K</td><vr/><td>V</td><vr/><td>Headers</td><vr/><td><IMG SCALE="BOTH" SRC="slides/src/main/asciidoc/images/mantelpiece-clock.png"/></td></tr>
+  <tr><td>K</td><vr/><td>V</td><vr/><td>Headers</td><vr/><td><IMG SCALE="BOTH" SRC="slides/src/main/asciidoc/images/stopwatch.png"/></td></tr>
   </table>>;
   ];
   source->processor[label="pipeRecordList\l (List<? extends\l TestRecord<K, V>>)";fontname="Courier"];
@@ -331,7 +331,34 @@ readRecordsToList()`
 
 == `TopologyTestDriver` capabilities: Timestamp emulation
 
-image::mantelpiece-clock.png[]
+[graphviz,"pipewithinstant.png"]
+----
+digraph G {
+  rankdir="LR";
+  graph [ dpi = 180 ];
+  source [shape=none;
+  label=<<table cellborder="0" padding="0" border="1">
+  <tr><td>K</td><vr/><td>V</td><vr/><td><IMG SCALE="BOTH" SRC="slides/src/main/asciidoc/images/stopwatch.png"/></td></tr>
+  <hr/>
+  <tr><td>K</td><vr/><td>V</td><vr/><td><IMG SCALE="BOTH" SRC="slides/src/main/asciidoc/images/stopwatch.png"/></td></tr>
+  <hr/>
+  <tr><td>K</td><vr/><td>V</td><vr/><td><IMG SCALE="BOTH" SRC="slides/src/main/asciidoc/images/stopwatch.png"/></td></tr>
+  </table>>;
+  ];
+  processor [shape="septagon"; label="\nTopology\n "];
+  sink [shape=none;
+  label=<<table cellborder="0" padding="0" border="1">
+  <tr><td>K</td><vr/><td>V</td><vr/><td><IMG SCALE="BOTH" SRC="slides/src/main/asciidoc/images/stopwatch.png"/></td></tr>
+  <hr/>
+  <tr><td>K</td><vr/><td>V</td><vr/><td><IMG SCALE="BOTH" SRC="slides/src/main/asciidoc/images/stopwatch.png"/></td></tr>
+  <hr/>
+  <tr><td>K</td><vr/><td>V</td><vr/><td><IMG SCALE="BOTH" SRC="slides/src/main/asciidoc/images/stopwatch.png"/></td></tr>
+  </table>>;
+  ];
+  source->processor[label="pipeInput(V, Instant)\lpipeInput(K, V, Instant)";fontname="Courier"];
+  processor->sink[label="";fontname="Courier"];
+}
+----
 
 
 [cols="40a,60a"]
