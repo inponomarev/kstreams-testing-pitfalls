@@ -651,6 +651,12 @@ Store[shape=cylinder,label=<<table cellspacing="5" cellborder="0"  border="0">
         
 Cache -> Store;
 {rank = same; Store; Cache; }
+
+#Padding with invisible elements
+Cache -> P1 -> P2[style="invis"];
+P1[label="<STOP>", style="invis"];
+P2[label="<STOP>", style="invis"];
+
 }
 ----
 
@@ -685,6 +691,13 @@ Store[shape=cylinder,label=<<table cellspacing="5" cellborder="0"  border="0">
         
 Cache -> Store;
 {rank = same; Store; Cache; }
+
+#Padding with invisible elements
+P3->A1[style="invis"];
+Cache -> P1 -> P2[style="invis"];
+P1[label="<STOP>", style="invis"];
+P2[label="<STOP>", style="invis"];
+P3[label="A", style="invis"];
 }
 ----
 
@@ -719,6 +732,14 @@ Store[shape=cylinder,label=<<table cellspacing="5" cellborder="0"  border="0">
         
 Cache -> Store;
 {rank = same; Store; Cache; }
+
+#Padding with invisible elements
+P3->P4->A1[style="invis"];
+Cache -> P1 -> P2[style="invis"];
+P1[label="<STOP>", style="invis"];
+P2[label="<STOP>", style="invis"];
+P3[label="A", style="invis"];
+P4[label="A", style="invis"];
 }
 ----
 
@@ -752,6 +773,15 @@ Store[shape=cylinder,label=<<table cellspacing="5" cellborder="0"  border="0">
         
 Cache -> Store;
 {rank = same; Store; Cache; }
+
+#Padding with invisible elements
+P3->P4->P5->A1[style="invis"];
+Cache -> P1 -> P2[style="invis"];
+P1[label="<STOP>", style="invis"];
+P2[label="<STOP>", style="invis"];
+P3[label="A", style="invis"];
+P4[label="A", style="invis"];
+P5[label="A", style="invis"];
 }
 ----
 
@@ -785,6 +815,15 @@ Store[shape=cylinder,label=<<table cellspacing="5" cellborder="0"  border="0">
 Cache -> Store;
 {rank = same; Store; Cache; }
 
+#Padding with invisible elements
+P3->P4->P5->P6->Reduce[style="invis"];
+Cache -> P1 -> P2[style="invis"];
+P1[label="<STOP>", style="invis"];
+P2[label="<STOP>", style="invis"];
+P3[label="A", style="invis"];
+P4[label="A", style="invis"];
+P5[label="A", style="invis"];
+P6[label="A", style="invis"];
 }
 ----
 
@@ -826,6 +865,15 @@ A1->surprised[style=invis];
 
 surprised[shape="none",label="",
    image="slides/src/main/asciidoc/images/surprised.png"];
+
+
+#Padding with invisible elements
+P3->P4->P5->P6->Reduce[style="invis"];
+P3[label="A", style="invis"];
+P4[label="A", style="invis"];
+P5[label="A", style="invis"];
+P6[label="A", style="invis"];
+
 }
 ----
 
@@ -900,6 +948,12 @@ Store[shape=cylinder,label=<<table cellspacing="5" cellborder="0"  border="0">
 Cache -> Store;
 
 {rank = same; Transformer; Store; Cache; }
+
+#Padding with invisible elements
+Transformer -> P1 -> P2[style="invis"];
+P1[label="A", style="invis"];
+P2[label="A", style="invis"];
+
 }
 ----
 
@@ -935,6 +989,13 @@ Store[shape=cylinder,label=<<table cellspacing="5" cellborder="0"  border="0">
 Cache -> Store;
 
 {rank = same; Transformer; Store; Cache; }
+
+
+#Padding with invisible elements
+A2 -> P2[style="invis"];
+P1 -> A1[style="invis"];
+P1[label="A", style="invis"];
+P2[label="A", style="invis"];
 }
 ----
 
@@ -970,8 +1031,95 @@ Store[shape=cylinder,label=<<table cellspacing="5" cellborder="0"  border="0">
 Cache -> Store;
 
 {rank = same; Transformer; Store; Cache; }
+
+#Padding with invisible elements
+P1 -> P2-> A1[style="invis"];
+P1[label="A", style="invis"];
+P2[label="A", style="invis"];
 }
 ----
+
+== Using Transformer
+
+[graphviz,"transformer5.png"]
+----
+digraph G {
+graph [ dpi = 180 ];
+rankdir="LR";
+
+A1[label="A"];
+B1[label="B"; style="invis"];
+A2[label="A"];
+B2[label="B"];
+
+A1 ->  Transformer -> B2 -> A2;
+
+Transformer[shape=box,label="ValueTransformerWithKey"];
+
+Transformer -> Cache;
+
+Cache[shape=box,label=<<table cellspacing="5" cellborder="0"  border="0">
+        <tr><td colspan="2">Cache</td></tr>
+        <tr><td>A</td><vr/><td>A</td></tr>
+        <tr><td>B</td><vr/><td>B</td></tr>
+        </table>>]
+Store[shape=cylinder,label=<<table cellspacing="5" cellborder="0"  border="0">
+        <tr><td colspan="2">Local Store</td></tr>
+        <tr><td> </td><td> </td></tr>
+        </table>>];
+        
+Cache -> Store;
+
+{rank = same; Transformer; Store; Cache; }
+
+#Padding with invisible elements
+P1 -> P2-> B1 -> A1[style="invis"];
+P1[label="A", style="invis"];
+P2[label="A", style="invis"];
+}
+----
+
+== Using Transformer
+
+[graphviz,"transformer6.png"]
+----
+digraph G {
+graph [ dpi = 180 ];
+rankdir="LR";
+
+A1[label="A"; style="invis"];
+B1[label="B"; style="invis"];
+A2[label="A"];
+B2[label="B"];
+
+A1 ->  Transformer[style="invis"];
+Transformer -> B2 -> A2;
+
+Transformer[shape=box,label="ValueTransformerWithKey"];
+
+Transformer -> Cache;
+
+Cache[shape=box,label=<<table cellspacing="5" cellborder="0"  border="0">
+        <tr><td colspan="2">Cache</td></tr>
+        <tr><td>A</td><vr/><td>A</td></tr>
+        <tr><td>B</td><vr/><td>B</td></tr>
+        </table>>]
+Store[shape=cylinder,label=<<table cellspacing="5" cellborder="0"  border="0">
+        <tr><td colspan="2">Local Store</td></tr>
+        <tr><td> </td><td> </td></tr>
+        </table>>];
+        
+Cache -> Store;
+
+{rank = same; Transformer; Store; Cache; }
+
+#Padding with invisible elements
+P1 -> P2-> B1 -> A1[style="invis"];
+P1[label="A", style="invis"];
+P2[label="A", style="invis"];
+}
+----
+
 
 == Let's run tests on real Kafka!
 
