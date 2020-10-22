@@ -193,6 +193,21 @@ Then we turn to slides to discuss what TTD can do
 
 == `TopologyTestDriver`
 
+[plantuml, ttd, png]
+----
+@startuml
+skinparam dpi 180
+object topology
+object topologyTestDriver
+object inputTopic
+object outputTopic
+
+topologyTestDriver -> topology
+inputTopic --> topologyTestDriver
+outputTopic --> topologyTestDriver
+@enduml
+----
+
 [source,java]
 -----
 TestInputTopic<String, String> inputTopic =
@@ -208,6 +223,19 @@ TestOutputTopic<String, String> outputTopic =
 
 == `TopologyTestDriver` capabilities
 
+[graphviz,"pipeinput.png"]
+----
+digraph G {
+  rankdir="LR";
+  graph [ dpi = 180 ];
+  source [shape=record;label="{K|V}"];
+  processor [shape="septagon"; label="\nTopology\n "];
+  sink [shape=record;label="{K|V}"];
+  source->processor[label="pipeInput (V)\lpipeInput (K, V)";fontname="Courier"];
+  processor->sink[label="readValue ()\lreadKeyValue()";fontname="Courier"];
+}
+----
+
 [cols="24a,38a,38a"]
 |===
 |*What is being sent/received* 	
@@ -222,7 +250,23 @@ TestOutputTopic<String, String> outputTopic =
 |===
 
 
+
+
+
 == `TopologyTestDriver` capabilities
+
+[graphviz,"pipelist.png"]
+----
+digraph G {
+  rankdir="LR";
+  graph [ dpi = 180 ];
+  source [shape=record;label="{K|V}|{K|V}|{K|V}"];
+  processor [shape="septagon"; label="\nTopology\n "];
+  sink [shape=record;label="{K|V}|{K|V}|{K|V}"];
+  source->processor[label="pipeValueList(List<V>)\lpipeKeyValueList\l   (List<KeyValue<K,V>>)";fontname="Courier"];
+  processor->sink[label="readValuesToList()\lreadKeyValuesToList()\lreadKeyValuesToMap()";fontname="Courier"];
+}
+----
 
 [cols="24a,38a,38a"]
 |===
@@ -234,14 +278,40 @@ TestOutputTopic<String, String> outputTopic =
 |`List<V>
 readValuesToList()`
 |A list of key/value pairs 	
-|`pipeValueList (List<V>)` 	
+|`pipeKeyValueList(List<KeyValue<K,V>>)` 	
 |`List<KeyValue<K,V>> readKeyValuesToList()`
 
 `Map<K,V> readKeyValuesToMap()`
+|===
+
+
+
+
+== `TopologyTestDriver` capabilities
+
+[graphviz,"piperecords.png"]
+----
+digraph G {
+  rankdir="LR";
+  graph [ dpi = 180 ];
+  source [shape=record;label="{K|V|Headers|Timestamp}|{K|V|Headers|Timestamp}|{K|V|Headers|Timestamp}"];
+  processor [shape="septagon"; label="\nTopology\n "];
+  sink [shape=record;label="{K|V|Headers|Timestamp}|{K|V|Headers|Timestamp}|{K|V|Headers|Timestamp}"];
+  source->processor[label="pipeRecordList\l (List<? extends\l TestRecord<K, V>>)";fontname="Courier"];
+  processor->sink[label="readRecordsToList()";fontname="Courier"];
+}
+----
+
+[cols="24a,38a,38a"]
+|===
+|*What is being sent/received* 	
+|*TestInputTopic methods* 	
+|*TestOutputTopic methods*
 |A list of Records 	
 |`pipeRecordList (List<? extends TestRecord<K, V>>)` 	|`List<TestRecord<K, V>>
 readRecordsToList()`
 |===
+
 
 
 == `TopologyTestDriver` capabilities: Timestamp emulation
