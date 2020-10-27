@@ -226,9 +226,10 @@ TestOutputTopic<String, String> outputTopic =
 ----
 digraph G {
   rankdir="LR";
-  graph [ dpi = 180 ];
+  graph [ dpi = 130 ];
   source [shape=record;label="{K|V}"];
-  processor [shape="septagon"; label="\nTopology\n "];
+  processor [shape="box"; style="rounded";
+ label="\nTopology\n "];
   sink [shape=record;label="{K|V}"];
   source->processor[label="pipeInput (V)\lpipeInput (K, V)";fontname="Courier"];
   processor->sink[label="readValue ()\lreadKeyValue()";fontname="Courier"];
@@ -258,9 +259,9 @@ digraph G {
 ----
 digraph G {
   rankdir="LR";
-  graph [ dpi = 180 ];
+  graph [ dpi = 130 ];
   source [shape=record;label="{K|V}|{K|V}|{K|V}"];
-  processor [shape="septagon"; label="\nTopology\n "];
+  processor [shape="box"; style="rounded"; label="\nTopology\n "];
   sink [shape=record;label="{K|V}|{K|V}|{K|V}"];
   source->processor[label="pipeValueList(List<V>)\lpipeKeyValueList\l   (List<KeyValue<K,V>>)";fontname="Courier"];
   processor->sink[label="readValuesToList()\lreadKeyValuesToList()\lreadKeyValuesToMap()";fontname="Courier"];
@@ -292,7 +293,7 @@ readValuesToList()`
 ----
 digraph G {
   rankdir="LR";
-  graph [ dpi = 180 ];
+  graph [ dpi = 130 ];
   source [shape=none;
   label=<<table cellborder="0" padding="0" border="1">
   <tr><td>K</td><vr/><td>V</td><vr/><td>Headers</td><vr/><td><IMG SCALE="BOTH" SRC="slides/src/main/asciidoc/images/stopwatch.png"/></td></tr>
@@ -302,7 +303,7 @@ digraph G {
   <tr><td>K</td><vr/><td>V</td><vr/><td>Headers</td><vr/><td><IMG SCALE="BOTH" SRC="slides/src/main/asciidoc/images/stopwatch.png"/></td></tr>
   </table>>;
   ];
-  processor [shape="septagon"; label="\nTopology\n "];
+  processor [shape="box"; style="rounded"; label="\nTopology\n "];
   sink [shape=none;
   label=<<table cellborder="0" padding="0" border="1">
   <tr><td>K</td><vr/><td>V</td><vr/><td>Headers</td><vr/><td><IMG SCALE="BOTH" SRC="slides/src/main/asciidoc/images/stopwatch.png"/></td></tr>
@@ -335,7 +336,7 @@ readRecordsToList()`
 ----
 digraph G {
   rankdir="LR";
-  graph [ dpi = 180 ];
+  graph [ dpi = 130 ];
   source [shape=none;
   label=<<table cellborder="0" padding="0" border="1">
   <tr><td>K</td><vr/><td>V</td><vr/><td><IMG SCALE="BOTH" SRC="slides/src/main/asciidoc/images/stopwatch.png"/></td></tr>
@@ -345,7 +346,7 @@ digraph G {
   <tr><td>K</td><vr/><td>V</td><vr/><td><IMG SCALE="BOTH" SRC="slides/src/main/asciidoc/images/stopwatch.png"/></td></tr>
   </table>>;
   ];
-  processor [shape="septagon"; label="\nTopology\n "];
+  processor [shape="box"; style="rounded"; label="\nTopology\n "];
   sink [shape=none;
   label=<<table cellborder="0" padding="0" border="1">
   <tr><td>K</td><vr/><td>V</td><vr/><td><IMG SCALE="BOTH" SRC="slides/src/main/asciidoc/images/stopwatch.png"/></td></tr>
@@ -883,19 +884,12 @@ TopologyTestDriver vs. Kafka Streams execution loop
 
 == Kafka Streams execution loop
 
-`StreamThread#runLoop()`
 
-* poll
-* initialize/restore (idempotent)
-* process (batch) (cached)
-* punctuate
-* flush caches
-* commit
-
-[graphviz,"streamsLoop.png"]
+[graphviz,"streamsloop.png"]
 ----
 digraph G {
 rankdir="LR";
+node[shape="box"; style="rounded"];
 start [];
 runLoop [label="while running", ];
 poll [];
@@ -919,6 +913,15 @@ runLoop -> commit [arrowhead="dot", label="on commit interval", color="grey", fo
 }
 ----
 
+`StreamThread#runLoop()`
+
+* poll
+* initialize/restore (idempotent)
+* process (batch) (cached)
+* punctuate
+* flush caches
+* commit
+
 == TopologyTestDriver execution loop
 
 `TopologyTestDriver#pipeRecord`
@@ -931,10 +934,11 @@ runLoop -> commit [arrowhead="dot", label="on commit interval", color="grey", fo
 ** flush caches
 ** re-enqueue internal "topic" results
 
-[graphviz,"ttdLoop.png"]
+[graphviz,"ttdloop.png"]
 ----
 digraph G {
 rankdir="LR";
+node[shape="box"; style="rounded"];
 start [label="enqueue"];
 runLoop [label="while queue not empty", ];
 dequeue [];
