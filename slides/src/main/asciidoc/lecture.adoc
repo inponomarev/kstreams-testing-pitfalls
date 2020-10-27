@@ -293,7 +293,7 @@ readValuesToList()`
 ----
 digraph G {
   rankdir="LR";
-  graph [ dpi = 130 ];
+  graph [ dpi = 100 ];
   source [shape=none;
   label=<<table cellborder="0" padding="0" border="1">
   <tr><td>K</td><vr/><td>V</td><vr/><td>Headers</td><vr/><td><IMG SCALE="BOTH" SRC="slides/src/main/asciidoc/images/stopwatch.png"/></td></tr>
@@ -336,7 +336,7 @@ readRecordsToList()`
 ----
 digraph G {
   rankdir="LR";
-  graph [ dpi = 130 ];
+  graph [ dpi = 100 ];
   source [shape=none;
   label=<<table cellborder="0" padding="0" border="1">
   <tr><td>K</td><vr/><td>V</td><vr/><td><IMG SCALE="BOTH" SRC="slides/src/main/asciidoc/images/stopwatch.png"/></td></tr>
@@ -599,16 +599,49 @@ image::monitoring.png[]
 | *TopologyTestDriver* 
 |
 is a big data streaming framework
-[%step]
+
+|
+is a fast, deterministic testing framework
+
+|===
+
+== Why it's not working
+
+[cols="50a,50a"]
+|===
+| *Kafka Streams*
+| *TopologyTestDriver* 
+|
+is a big data streaming framework
+
+
 * designed for high throughput
 * throughput demands batching, buffering, caching, etc.
 * caching is the culprit in this example
 |
 is a fast, deterministic testing framework
-[%step]
+
+|===
+
+== Why it's not working
+
+[cols="50a,50a"]
+|===
+| *Kafka Streams*
+| *TopologyTestDriver* 
+|
+is a big data streaming framework
+
+* designed for high throughput
+* throughput demands batching, buffering, caching, etc.
+* caching is the culprit in this example
+|
+is a fast, deterministic testing framework
+
 * designed for synchronous, immediate results
 * flush cache after every update
 |===
+
 
 == Why it's not working
 
@@ -924,16 +957,6 @@ runLoop -> commit [arrowhead="dot", label="on commit interval", color="grey", fo
 
 == TopologyTestDriver execution loop
 
-`TopologyTestDriver#pipeRecord`
-
-* enqueue
-* while queue not empty:
-** dequeue record
-** process
-** punctuate
-** flush caches
-** re-enqueue internal "topic" results
-
 [graphviz,"ttdloop.png"]
 ----
 digraph G {
@@ -956,13 +979,136 @@ enqueue -> runLoop [arrowhead="dot"];
 }
 ----
 
-== Other problems that can't be surfaced with `TopologyTestDriver`
+`TopologyTestDriver#pipeRecord`
 
-* "Single partition" -- everything related to co-partitioning
-* "Fused" subtopologies -- everything related to repartition operations
-* Timing: 
+* enqueue
+* while queue not empty:
+** dequeue record
+** process
+** punctuate
+** flush caches
+** re-enqueue internal "topic" results
+
+
+== What else?
+
+What are other problems that can't be surfaced with `TopologyTestDriver`?
+
+
+== `TopologyTestDriver`: single partition
+
+[graphviz, "copart-norm.png"]
+-----
+digraph D {
+  graph [ dpi = 150 ]; 
+  subgraph system {
+     subgraph cluster_s2{
+          style = "invis"
+          S1 [shape=plaintext label = "Source 1"];
+          S2 [shape=plaintext label = "Source 2"];
+          S1->S2 [style="invis"]
+      }
+    subgraph cluster_p1 {
+      label = "TopologyTestDriver";
+        subgraph cluster_p1{
+              label = "Single Partition"
+              labelloc = "b"
+          
+              b1[label = "B"];
+              a1[label = "A"];
+              d1[label = "D"];
+              c1[label = "C"];
+          }
+          
+        subgraph cluster_pp1{
+              label = "Single Partition"
+          
+              c[label = "C"];
+              a[label = "A"];
+              b[label = "B"];
+              d[label = "D"];
+              
+          }
+          
+    }
+    a->a1[style="dashed" dir="none"];
+    b->b1[style="dashed" dir="none"];
+    c->c1[style="dashed" dir="none"];
+    d->d1[style="dashed" dir="none"];
+  }
+} 
+-----
+
+== Kafka Streams: co-partitioning problems
+
+[graphviz, "copart-diff-algorithm.png"]
+-----
+digraph D {
+  graph [ dpi = 150 ]; 
+  subgraph system {
+     subgraph cluster_s2{
+          style = "invis"
+          S1 [shape=plaintext label = "Source 1"];
+          S2 [shape=plaintext label = "Source 2"];
+          S1->S2 [style="invis"]
+      }
+    subgraph cluster_p1 {
+      label = "Worker 1";
+        subgraph cluster_p1{
+              label = "Partition 1"
+              labelloc = "b"
+          
+              b1 [label = "B" color="red"]
+              a1 [label = "A"]
+              
+          }
+          
+        subgraph cluster_pp1{
+              label = "Partition 1"
+          
+               c[label = "C" color= "red"];
+              a [label = "A"];
+              
+          }
+          
+    }
+    subgraph cluster_p2 {
+      label = "Worker 2";
+      subgraph cluster_pp2{
+              label = "Partition 2"
+          b [label = "B" color="red"];
+              d[label = "D"];
+             
+              
+          }
+          subgraph cluster_p2{
+              label = "Partition 2"
+              labelloc = "b"
+              d1[label = "D"];
+              c1[label = "C" color = "red"];
+              
+          }
+          a->a1[style="dashed" dir="none"];
+          b->b1[color="red" dir="none"];
+          c->c1[color="red" dir="none"];
+          d->d1[style="dashed" dir="none"];
+    }
+  }
+} 
+-----
+
+== "Fused" subtopologies
+
+* everything related to repartition operations
+
+TODO: ADD DIAGRAM HERE
+
+== Timing 
+
 ** stream-stream joins can behave differently
 ** logic that depends on stream time (such as `suppress`) can behave differently
+
+TODO: ADD DIAGRAM HERE
 
 == Should we trust StackOverflow?
 
