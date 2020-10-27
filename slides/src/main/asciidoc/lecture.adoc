@@ -892,6 +892,33 @@ TopologyTestDriver vs. Kafka Streams execution loop
 * flush caches
 * commit
 
+[graphviz,"streamsLoop.png"]
+----
+digraph G {
+rankdir="LR";
+start [];
+runLoop [label="while running", ];
+poll [];
+process [];
+cache [];
+forward [];
+send [];
+commit [];
+flush [];
+
+start -> runLoop;
+runLoop -> poll [arrowhead="dot"];
+poll -> process [arrowhead="dot"];
+process -> forward;
+process -> cache;
+forward -> send;
+process -> runLoop [arrowhead="dot"];
+commit -> flush;
+flush -> forward;
+runLoop -> commit [arrowhead="dot", label="on commit interval", color="grey", fontcolor="grey"];
+}
+----
+
 == TopologyTestDriver execution loop
 
 `TopologyTestDriver#pipeRecord`
@@ -903,6 +930,27 @@ TopologyTestDriver vs. Kafka Streams execution loop
 ** punctuate
 ** flush caches
 ** re-enqueue internal "topic" results
+
+[graphviz,"ttdLoop.png"]
+----
+digraph G {
+rankdir="LR";
+start [label="enqueue"];
+runLoop [label="while queue not empty", ];
+dequeue [];
+poll [];
+process [];
+forward [];
+
+start -> runLoop;
+runLoop -> dequeue [arrowhead="dot"];
+dequeue -> poll [arrowhead="dot"];
+poll -> process [arrowhead="dot"];
+process -> forward;
+forward -> enqueue;
+enqueue -> runLoop [arrowhead="dot"];
+}
+----
 
 == Other problems that can't be surfaced with `TopologyTestDriver`
 
