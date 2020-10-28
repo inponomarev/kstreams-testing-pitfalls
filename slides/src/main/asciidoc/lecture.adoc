@@ -872,7 +872,7 @@ TopologyTestDriver vs. Kafka Streams execution loop
 [graphviz,"streamsloop.png"]
 ----
 digraph G {
-  graph [dpi = 180];
+  graph [dpi = 130];
   layout="neato";
   splines=curved;
   node[shape="box"; style="rounded"];
@@ -909,7 +909,7 @@ digraph G {
 [graphviz,"ttdloop.png"]
 ----
 digraph G {
-  graph [dpi = 180];
+  graph [dpi = 130];
   layout="neato";
   splines=curved;
   node[shape="box"; style="rounded"];
@@ -1051,7 +1051,7 @@ digraph D {
 ----
 digraph G {
   rankdir="LR";
-  graph [dpi = 100]; 
+  graph [dpi = 180]; 
   node[shape="box"; style="rounded"];
   
   S1[label=<<table cellspacing="30" cellborder="0"  border="0">
@@ -1067,7 +1067,7 @@ digraph G {
 ----
 digraph G {
   rankdir="LR";
-  graph [dpi = 100]; 
+  graph [dpi = 180]; 
   node[shape="box"; style="rounded"];
   S1->repart->S2;
   repart[shape="none";
@@ -1100,6 +1100,7 @@ digraph G {
 ----
 digraph G {
   rankdir="LR";
+  graph [dpi = 180];
   node[shape="circle"];
   A->X2->B[style=invis];
   A->B[style=invis];
@@ -1129,6 +1130,7 @@ digraph G {
 ----
 digraph G {
   rankdir="LR";
+  graph [dpi = 180];
   node[shape="circle"];
   A->X2->B[style=invis];
   A->B[style=invis];
