@@ -329,55 +329,6 @@ readRecordsToList()`
 |===
 
 
-
-== `TopologyTestDriver` capabilities: Timestamp emulation
-
-[graphviz,"pipewithinstant.png"]
-----
-digraph G {
-  rankdir="LR";
-  graph [ dpi = 100 ];
-  source [shape=none;
-  label=<<table cellborder="0" padding="0" border="1">
-  <tr><td>K</td><vr/><td>V</td><vr/><td><IMG SCALE="BOTH" SRC="slides/src/main/asciidoc/images/stopwatch.png"/></td></tr>
-  <hr/>
-  <tr><td>K</td><vr/><td>V</td><vr/><td><IMG SCALE="BOTH" SRC="slides/src/main/asciidoc/images/stopwatch.png"/></td></tr>
-  <hr/>
-  <tr><td>K</td><vr/><td>V</td><vr/><td><IMG SCALE="BOTH" SRC="slides/src/main/asciidoc/images/stopwatch.png"/></td></tr>
-  </table>>;
-  ];
-  processor [shape="box"; style="rounded"; label="\nTopology\n "];
-  sink [shape=none;
-  label=<<table cellborder="0" padding="0" border="1">
-  <tr><td>K</td><vr/><td>V</td><vr/><td><IMG SCALE="BOTH" SRC="slides/src/main/asciidoc/images/stopwatch.png"/></td></tr>
-  <hr/>
-  <tr><td>K</td><vr/><td>V</td><vr/><td><IMG SCALE="BOTH" SRC="slides/src/main/asciidoc/images/stopwatch.png"/></td></tr>
-  <hr/>
-  <tr><td>K</td><vr/><td>V</td><vr/><td><IMG SCALE="BOTH" SRC="slides/src/main/asciidoc/images/stopwatch.png"/></td></tr>
-  </table>>;
-  ];
-  source->processor[label="pipeInput(V, Instant)\lpipeInput(K, V, Instant)";fontname="Courier"];
-  processor->sink[label="";fontname="Courier"];
-}
-----
-
-
-[cols="40a,60a"]
-|===
-|*What is being sent*	
-|*TestInputTopic methods*
-|A value or a key/value pair with a given timestamp 	|`pipeInput(V, Instant)`
-
-`pipeInput(K, V, Instant)`
-|
-A value list or a key/value list with a given timestamp for the first record and a time difference between two consecutively generated records
-|`pipeValueList (List<V>, Instant, Duration)`
-
-`pipeKeyValueList(List<KeyValue<K, V>>,
-                Instant,
-                Duration)`
-|===
-
 == A "Simple Solution"
 
 [graphviz,"wrong-topology1.png"]
@@ -411,8 +362,6 @@ D1[label="A", style="invis"];
 D2[label="A", style="invis"];
 S1[label="<STOP>", style="invis"];
 S2[label="<STOP>", style="invis"];
-
-
 
 }
 ----
@@ -917,35 +866,31 @@ TopologyTestDriver vs. Kafka Streams execution loop
 
 == Kafka Streams execution loop
 
-
+[cols="50a,50a"]
+|===
+|
 [graphviz,"streamsloop.png"]
 ----
 digraph G {
-rankdir="LR";
-node[shape="box"; style="rounded"];
-start [];
-runLoop [label="while running", ];
-poll [];
-process [];
-cache [];
-forward [];
-send [];
-commit [];
-flush [];
-
-start -> runLoop;
-runLoop -> poll [arrowhead="dot"];
-poll -> process [arrowhead="dot"];
-process -> forward;
-process -> cache;
-forward -> send;
-process -> runLoop [arrowhead="dot"];
-commit -> flush;
-flush -> forward;
-runLoop -> commit [arrowhead="dot", label="on commit interval", color="grey", fontcolor="grey"];
+  graph [dpi = 180];
+  layout="neato";
+  splines=curved;
+  node[shape="box"; style="rounded"];
+  edge[len=1.3]
+  start[pos="-1,3!"];
+  start -> while[len=1];
+  while -> poll;
+  poll -> process;
+  process -> forward;
+  forward -> send;
+  send -> commit;
+  commit -> while;
+  while[label="while\nrunning"]
+  process -> cache;
+  cache -> forward[label="\nif time to flush"];
 }
 ----
-
+|
 `StreamThread#runLoop()`
 
 * poll
@@ -954,31 +899,34 @@ runLoop -> commit [arrowhead="dot", label="on commit interval", color="grey", fo
 * punctuate
 * flush caches
 * commit
-
+|===
 == TopologyTestDriver execution loop
 
+
+[cols="50a,50a"]
+|===
+|
 [graphviz,"ttdloop.png"]
 ----
 digraph G {
-rankdir="LR";
-node[shape="box"; style="rounded"];
-start [label="enqueue"];
-runLoop [label="while queue not empty", ];
-dequeue [];
-poll [];
-process [];
-forward [];
-
-start -> runLoop;
-runLoop -> dequeue [arrowhead="dot"];
-dequeue -> poll [arrowhead="dot"];
-poll -> process [arrowhead="dot"];
-process -> forward;
-forward -> enqueue;
-enqueue -> runLoop [arrowhead="dot"];
+  graph [dpi = 180];
+  layout="neato";
+  splines=curved;
+  node[shape="box"; style="rounded"];
+  edge[len=1.3]
+  pipeInput[pos="-1,3!"];
+  pipeInput -> enqueue[len=1];
+  enqueue -> while[len=1];
+  while -> dequeue;
+  dequeue -> process;
+  process -> forward;
+  forward -> enqueue2;
+  enqueue2 -> while;
+  while[label="while queue\nnot empty"]
+  enqueue2[label="enqueue"]
 }
 ----
-
+|
 `TopologyTestDriver#pipeRecord`
 
 * enqueue
@@ -988,7 +936,7 @@ enqueue -> runLoop [arrowhead="dot"];
 ** punctuate
 ** flush caches
 ** re-enqueue internal "topic" results
-
+|===
 
 == What else?
 
@@ -1097,19 +1045,115 @@ digraph D {
 } 
 -----
 
-== "Fused" subtopologies
+== `TopologyTestDriver`: "Fused" subtopologies
 
-* everything related to repartition operations
+[graphviz,"fused.png"]
+----
+digraph G {
+  rankdir="LR";
+  graph [dpi = 100]; 
+  node[shape="box"; style="rounded"];
+  
+  S1[label=<<table cellspacing="30" cellborder="0"  border="0">
+                   <tr><td>Subtopology 1</td><vr/><td>Subtopology 2</td></tr>
+            </table>>];
+            
+}
+----
 
-TODO: ADD DIAGRAM HERE
+== Kafka Streams: repartition topics
+
+[graphviz,"repart.png"]
+----
+digraph G {
+  rankdir="LR";
+  graph [dpi = 100]; 
+  node[shape="box"; style="rounded"];
+  S1->repart->S2;
+  repart[shape="none";
+    label=<<table cellspacing="10" cellborder="0"  border="1">
+                    <tr><td> </td><vr/><td> </td><vr/>
+                    <td> </td><vr/><td> </td><vr/><td> </td></tr>
+            </table>>;];
+  S1[label=<<table cellspacing="30" cellborder="0"  border="0">
+                   <tr><td>Subtopology 1</td></tr>
+            </table>>];
+            
+  S2[label=<<table cellspacing="30" cellborder="0"  border="0">
+                   <tr><td>Subtopology 2</td></tr>
+            </table>>];
+  repart->l[style=invis];
+  {rank=same;l;repart}
+  l[shape=none;label="repartition\ntopic"]
+}
+----
 
 == Timing 
 
-** stream-stream joins can behave differently
+** stream-stream joins can behave differently (`pipeInput` order vs. timestamp order)
 ** logic that depends on stream time (such as `suppress`) can behave differently
 
-TODO: ADD DIAGRAM HERE
+[cols="50a,50a"]
+|===
+|
+[graphviz,"timing1.png"]
+----
+digraph G {
+  rankdir="LR";
+  node[shape="circle"];
+  A->X2->B[style=invis];
+  A->B[style=invis];
+  C->D[style=invis];
+  C->X3->D[style=invis];
+  
+  A->J1;C->J1;
+  B->J2;D->J2;
 
+  {rank=same;A;X1;C}
+  {rank=same;B;X4;D}
+
+  A->X1->C[style=invis];
+  B->X4->D[style=invis];
+
+  J1[label="A+C";shape="oval"]
+  J2[label="B+D";shape="oval"]
+  /*invisible nodes for padding*/
+  X1[style=invis;label="X"];
+  X2[style=invis;label="X"];
+  X3[style=invis;label="X"];
+  X4[style=invis;label="X"];
+}
+----
+|
+[graphviz,"timing2.png"]
+----
+digraph G {
+  rankdir="LR";
+  node[shape="circle"];
+  A->X2->B[style=invis];
+  A->B[style=invis];
+  D->C[style=invis];
+  D->X3->C[style=invis];
+  
+  A->J1;D->J1;
+  C->J2;B->J2;
+
+  {rank=same;A;X1;D}
+  {rank=same;B;X4;C}
+
+  A->X1->D[style=invis];
+  B->X4->C[style=invis];
+
+  J1[label="A+D";shape="oval"]
+  J2[label="B+C";shape="oval"]
+  /*invisible nodes for padding*/
+  X1[style=invis;label="X"];
+  X2[style=invis;label="X"];
+  X3[style=invis;label="X"];
+  X4[style=invis;label="X"];
+}
+----
+|===
 == Should we trust StackOverflow?
 
 image::so.png[{image-90-width}]
@@ -1466,13 +1510,33 @@ deactivate Awaitility
 * We can wait for extra 5 seconds (bad choice)
 * We can put a 'marker record' at the end of the input and wait for it to appear in the output (not always possible)  
 
-== KIP-655 is under discussion
-
-image::kip-655.png[{image-80-width}]
 
 == Summary
 
 [%step]
-* TopologyTestDriver is a required tool
-* But it doesn't fully reflect all aspects of real Kafka cluster
-* Integration tests are 'real', but asynchronous
+* *Both* `TopologyTestDriver` and integration tests are needed
+* Write unit tests with `TopologyTestDriver`. When it fails to surface the problem, use integration tests. 
+* Know the limitations of `TopologyTestDriver`. 
+* Understand the difficulties and limitations of asynchronous testing.
+
+== KIP-655 is under discussion
+
+image::kip-655.png[{image-80-width}]
+
+== Thank you!
+
+[cols="50a,50a"]
+|===
+*Ivan Ponomarev* 
+
+* icon:envelope[size=lg] iponomarev@curs.ru
+* icon:twitter[size=lg] https://twitter.com/inponomarev[@inponomarev]
+* icon:github[size=lg] https://github.com/inponomarev[inponomarev]
+|
+*John Roesler*
+
+* icon:envelope[size=lg] john@confluent.io
+* icon:envelope[size=lg] vvcephei@apache.org
+* icon:github[size=lg] https://github.com/vvcephei[vvcephei]
+|===
+
