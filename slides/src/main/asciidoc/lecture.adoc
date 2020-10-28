@@ -1529,12 +1529,17 @@ image::kip-655.png[{image-80-width}]
 
 [cols="50a,50a"]
 |===
+|
+image::ivan.jpg[{image-20-width}]
 *Ivan Ponomarev* 
 
 * icon:envelope[size=lg] iponomarev@curs.ru
 * icon:twitter[size=lg] https://twitter.com/inponomarev[@inponomarev]
 * icon:github[size=lg] https://github.com/inponomarev[inponomarev]
 |
+
+image::john.jpg[{image-20-width}]
+
 *John Roesler*
 
 * icon:envelope[size=lg] john@confluent.io
