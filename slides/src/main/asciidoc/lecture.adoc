@@ -869,7 +869,7 @@ TopologyTestDriver vs. Kafka Streams execution loop
 [cols="50a,50a"]
 |===
 |
-[graphviz,"streamsloop.png"]
+[graphviz,"streamsloop1.png"]
 ----
 digraph G {
   graph [dpi = 130];
@@ -888,6 +888,7 @@ digraph G {
   while[label="while\nrunning"]
   process -> cache;
   cache -> forward[label="\nif time to flush"];
+  start[style="rounded,filled"; fillcolor="#ffffcc"]
 }
 ----
 |
@@ -900,13 +901,322 @@ digraph G {
 * flush caches
 * commit
 |===
+
+== Kafka Streams execution loop
+
+[cols="50a,50a"]
+|===
+|
+[graphviz,"streamsloop2.png"]
+----
+digraph G {
+  graph [dpi = 130];
+  layout="neato";
+  splines=curved;
+  node[shape="box"; style="rounded"];
+  edge[len=1.3]
+  start[pos="-1,3!"];
+  start -> while[len=1];
+  while -> poll;
+  poll -> process;
+  process -> forward;
+  forward -> send;
+  send -> commit;
+  commit -> while;
+  while[label="while\nrunning"]
+  process -> cache;
+  cache -> forward[label="\nif time to flush"];
+  while[style="rounded,filled"; fillcolor="#ffffcc"]
+}
+----
+|
+`StreamThread#runLoop()`
+
+* poll
+* initialize/restore (idempotent)
+* process (batch) (cached)
+* punctuate
+* flush caches
+* commit
+|===
+
+== Kafka Streams execution loop
+
+[cols="50a,50a"]
+|===
+|
+[graphviz,"streamsloop3.png"]
+----
+digraph G {
+  graph [dpi = 130];
+  layout="neato";
+  splines=curved;
+  node[shape="box"; style="rounded"];
+  edge[len=1.3]
+  start[pos="-1,3!"];
+  start -> while[len=1];
+  while -> poll;
+  poll -> process;
+  process -> forward;
+  forward -> send;
+  send -> commit;
+  commit -> while;
+  while[label="while\nrunning"]
+  process -> cache;
+  cache -> forward[label="\nif time to flush"];
+  poll[style="rounded,filled"; fillcolor="#ffffcc"]
+}
+----
+|
+`StreamThread#runLoop()`
+
+* poll
+* initialize/restore (idempotent)
+* process (batch) (cached)
+* punctuate
+* flush caches
+* commit
+|===
+
+== Kafka Streams execution loop
+
+[cols="50a,50a"]
+|===
+|
+[graphviz,"streamsloop4.png"]
+----
+digraph G {
+  graph [dpi = 130];
+  layout="neato";
+  splines=curved;
+  node[shape="box"; style="rounded"];
+  edge[len=1.3]
+  start[pos="-1,3!"];
+  start -> while[len=1];
+  while -> poll;
+  poll -> process;
+  process -> forward;
+  forward -> send;
+  send -> commit;
+  commit -> while;
+  while[label="while\nrunning"]
+  process -> cache;
+  cache -> forward[label="\nif time to flush"];
+  process[style="rounded,filled"; fillcolor="#ffffcc"]
+}
+----
+|
+`StreamThread#runLoop()`
+
+* poll
+* initialize/restore (idempotent)
+* process (batch) (cached)
+* punctuate
+* flush caches
+* commit
+|===
+
+== Kafka Streams execution loop
+
+[cols="50a,50a"]
+|===
+|
+[graphviz,"streamsloop5.png"]
+----
+digraph G {
+  graph [dpi = 130];
+  layout="neato";
+  splines=curved;
+  node[shape="box"; style="rounded"];
+  edge[len=1.3]
+  start[pos="-1,3!"];
+  start -> while[len=1];
+  while -> poll;
+  poll -> process;
+  process -> forward;
+  forward -> send;
+  send -> commit;
+  commit -> while;
+  while[label="while\nrunning"]
+  process -> cache;
+  cache -> forward[label="\nif time to flush";color="red";fontcolor="red"];
+  cache[style="rounded,filled"; fillcolor="#ffffcc"]
+}
+----
+|
+`StreamThread#runLoop()`
+
+* poll
+* initialize/restore (idempotent)
+* process (batch) (cached)
+* punctuate
+* flush caches
+* commit
+|===
+
+== Kafka Streams execution loop
+
+[cols="50a,50a"]
+|===
+|
+[graphviz,"streamsloop6.png"]
+----
+digraph G {
+  graph [dpi = 130];
+  layout="neato";
+  splines=curved;
+  node[shape="box"; style="rounded"];
+  edge[len=1.3]
+  start[pos="-1,3!"];
+  start -> while[len=1];
+  while -> poll;
+  poll -> process;
+  process -> forward;
+  forward -> send;
+  send -> commit;
+  commit -> while;
+  while[label="while\nrunning"]
+  process -> cache;
+  cache -> forward[label="\nif time to flush"];
+  forward[style="rounded,filled"; fillcolor="#ffffcc"]
+}
+----
+|
+`StreamThread#runLoop()`
+
+* poll
+* initialize/restore (idempotent)
+* process (batch) (cached)
+* punctuate
+* flush caches
+* commit
+|===
+
+== Kafka Streams execution loop
+
+[cols="50a,50a"]
+|===
+|
+[graphviz,"streamsloop7.png"]
+----
+digraph G {
+  graph [dpi = 130];
+  layout="neato";
+  splines=curved;
+  node[shape="box"; style="rounded"];
+  edge[len=1.3]
+  start[pos="-1,3!"];
+  start -> while[len=1];
+  while -> poll;
+  poll -> process;
+  process -> forward;
+  forward -> send;
+  send -> commit;
+  commit -> while;
+  while[label="while\nrunning"]
+  process -> cache;
+  cache -> forward[label="\nif time to flush"];
+  send[style="rounded,filled"; fillcolor="#ffffcc"]
+}
+----
+|
+`StreamThread#runLoop()`
+
+* poll
+* initialize/restore (idempotent)
+* process (batch) (cached)
+* punctuate
+* flush caches
+* commit
+|===
+
+
+== Kafka Streams execution loop
+
+[cols="50a,50a"]
+|===
+|
+[graphviz,"streamsloop8.png"]
+----
+digraph G {
+  graph [dpi = 130];
+  layout="neato";
+  splines=curved;
+  node[shape="box"; style="rounded"];
+  edge[len=1.3]
+  start[pos="-1,3!"];
+  start -> while[len=1];
+  while -> poll;
+  poll -> process;
+  process -> forward;
+  forward -> send;
+  send -> commit;
+  commit -> while;
+  while[label="while\nrunning"]
+  process -> cache;
+  cache -> forward[label="\nif time to flush"];
+  commit[style="rounded,filled"; fillcolor="#ffffcc"]
+}
+----
+|
+`StreamThread#runLoop()`
+
+* poll
+* initialize/restore (idempotent)
+* process (batch) (cached)
+* punctuate
+* flush caches
+* commit
+|===
+
+
+
 == TopologyTestDriver execution loop
 
 
 [cols="50a,50a"]
 |===
 |
-[graphviz,"ttdloop.png"]
+[graphviz,"ttdloop1.png"]
+----
+digraph G {
+  graph [dpi = 130];
+  layout="neato";
+  splines=curved;
+  node[shape="box"; style="rounded"];
+  edge[len=1.3]
+  pipeInput[pos="-1,3!"];
+  pipeInput -> enqueue[len=1];
+  enqueue -> while[len=1];
+  while -> dequeue;
+  dequeue -> process;
+  process -> forward;
+  forward -> enqueue2;
+  enqueue2 -> while;
+  while[label="while queue\nnot empty"];
+  enqueue2[label="enqueue"];
+  pipeInput[style="rounded,filled"; fillcolor="#ffffcc"]
+}
+----
+|
+`TopologyTestDriver#pipeRecord`
+
+* enqueue
+* while queue not empty:
+** dequeue record
+** process
+** punctuate
+** flush caches
+** re-enqueue internal "topic" results
+|===
+
+== TopologyTestDriver execution loop
+
+
+[cols="50a,50a"]
+|===
+|
+[graphviz,"ttdloop2.png"]
 ----
 digraph G {
   graph [dpi = 130];
@@ -924,6 +1234,7 @@ digraph G {
   enqueue2 -> while;
   while[label="while queue\nnot empty"]
   enqueue2[label="enqueue"]
+  enqueue[style="rounded,filled"; fillcolor="#ffffcc"];
 }
 ----
 |
@@ -937,6 +1248,202 @@ digraph G {
 ** flush caches
 ** re-enqueue internal "topic" results
 |===
+
+== TopologyTestDriver execution loop
+
+
+[cols="50a,50a"]
+|===
+|
+[graphviz,"ttdloop3.png"]
+----
+digraph G {
+  graph [dpi = 130];
+  layout="neato";
+  splines=curved;
+  node[shape="box"; style="rounded"];
+  edge[len=1.3]
+  pipeInput[pos="-1,3!"];
+  pipeInput -> enqueue[len=1];
+  enqueue -> while[len=1];
+  while -> dequeue;
+  dequeue -> process;
+  process -> forward;
+  forward -> enqueue2;
+  enqueue2 -> while;
+  while[label="while queue\nnot empty"];
+  enqueue2[label="enqueue"];
+  while[style="rounded,filled"; fillcolor="#ffffcc"];
+}
+----
+|
+`TopologyTestDriver#pipeRecord`
+
+* enqueue
+* while queue not empty:
+** dequeue record
+** process
+** punctuate
+** flush caches
+** re-enqueue internal "topic" results
+|===
+
+== TopologyTestDriver execution loop
+
+
+[cols="50a,50a"]
+|===
+|
+[graphviz,"ttdloop4.png"]
+----
+digraph G {
+  graph [dpi = 130];
+  layout="neato";
+  splines=curved;
+  node[shape="box"; style="rounded"];
+  edge[len=1.3]
+  pipeInput[pos="-1,3!"];
+  pipeInput -> enqueue[len=1];
+  enqueue -> while[len=1];
+  while -> dequeue;
+  dequeue -> process;
+  process -> forward;
+  forward -> enqueue2;
+  enqueue2 -> while;
+  while[label="while queue\nnot empty"];
+  enqueue2[label="enqueue"];
+  dequeue[style="rounded,filled"; fillcolor="#ffffcc"];
+}
+----
+|
+`TopologyTestDriver#pipeRecord`
+
+* enqueue
+* while queue not empty:
+** dequeue record
+** process
+** punctuate
+** flush caches
+** re-enqueue internal "topic" results
+|===
+
+== TopologyTestDriver execution loop
+
+
+[cols="50a,50a"]
+|===
+|
+[graphviz,"ttdloop5.png"]
+----
+digraph G {
+  graph [dpi = 130];
+  layout="neato";
+  splines=curved;
+  node[shape="box"; style="rounded"];
+  edge[len=1.3]
+  pipeInput[pos="-1,3!"];
+  pipeInput -> enqueue[len=1];
+  enqueue -> while[len=1];
+  while -> dequeue;
+  dequeue -> process;
+  process -> forward;
+  forward -> enqueue2;
+  enqueue2 -> while;
+  while[label="while queue\nnot empty"];
+  enqueue2[label="enqueue"];
+  process[style="rounded,filled"; fillcolor="#ffffcc"];
+}
+----
+|
+`TopologyTestDriver#pipeRecord`
+
+* enqueue
+* while queue not empty:
+** dequeue record
+** process
+** punctuate
+** flush caches
+** re-enqueue internal "topic" results
+|===
+
+== TopologyTestDriver execution loop
+
+
+[cols="50a,50a"]
+|===
+|
+[graphviz,"ttdloop6.png"]
+----
+digraph G {
+  graph [dpi = 130];
+  layout="neato";
+  splines=curved;
+  node[shape="box"; style="rounded"];
+  edge[len=1.3]
+  pipeInput[pos="-1,3!"];
+  pipeInput -> enqueue[len=1];
+  enqueue -> while[len=1];
+  while -> dequeue;
+  dequeue -> process;
+  process -> forward;
+  forward -> enqueue2;
+  enqueue2 -> while;
+  while[label="while queue\nnot empty"];
+  enqueue2[label="enqueue"];
+  forward[style="rounded,filled"; fillcolor="#ffffcc"];
+}
+----
+|
+`TopologyTestDriver#pipeRecord`
+
+* enqueue
+* while queue not empty:
+** dequeue record
+** process
+** punctuate
+** flush caches
+** re-enqueue internal "topic" results
+|===
+
+== TopologyTestDriver execution loop
+
+
+[cols="50a,50a"]
+|===
+|
+[graphviz,"ttdloop7.png"]
+----
+digraph G {
+  graph [dpi = 130];
+  layout="neato";
+  splines=curved;
+  node[shape="box"; style="rounded"];
+  edge[len=1.3]
+  pipeInput[pos="-1,3!"];
+  pipeInput -> enqueue[len=1];
+  enqueue -> while[len=1];
+  while -> dequeue;
+  dequeue -> process;
+  process -> forward;
+  forward -> enqueue2;
+  enqueue2 -> while;
+  while[label="while queue\nnot empty"];
+  enqueue2[label="enqueue"];
+  enqueue2[style="rounded,filled"; fillcolor="#ffffcc"];
+}
+----
+|
+`TopologyTestDriver#pipeRecord`
+
+* enqueue
+* while queue not empty:
+** dequeue record
+** process
+** punctuate
+** flush caches
+** re-enqueue internal "topic" results
+|===
+
 
 == What else?
 

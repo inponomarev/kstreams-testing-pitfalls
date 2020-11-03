@@ -4,5 +4,7 @@
 /cache*.png
 /awaitility*.png
 /transformer*.png
-/streamsloop.png
-/ttdloop.png
+/streamsloop*.png
+/ttdloop*.png
+/timing*.png
+/ttd.png
