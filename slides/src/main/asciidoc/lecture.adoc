@@ -1609,6 +1609,9 @@ digraph G {
   rankdir="LR";
   graph [dpi = 180];
   node[shape="circle"];
+  subgraph cluster_0 {
+  label = "pipeInput order";
+
   A->X2->B[style=invis];
   A->B[style=invis];
   C->D[style=invis];
@@ -1630,6 +1633,7 @@ digraph G {
   X2[style=invis;label="X"];
   X3[style=invis;label="X"];
   X4[style=invis;label="X"];
+  }
 }
 ----
 |
@@ -1639,6 +1643,8 @@ digraph G {
   rankdir="LR";
   graph [dpi = 180];
   node[shape="circle"];
+  subgraph cluster_0 {
+  label = "timestamp order";
   A->X2->B[style=invis];
   A->B[style=invis];
   D->C[style=invis];
@@ -1660,6 +1666,7 @@ digraph G {
   X2[style=invis;label="X"];
   X3[style=invis;label="X"];
   X4[style=invis;label="X"];
+  }
 }
 ----
 |===
