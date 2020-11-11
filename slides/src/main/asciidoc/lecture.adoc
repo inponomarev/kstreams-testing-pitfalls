@@ -866,9 +866,7 @@ TopologyTestDriver vs. Kafka Streams execution loop
 
 == Kafka Streams execution loop
 
-[cols="50a,50a"]
-|===
-|
+
 [graphviz,"streamsloop1.png"]
 ----
 digraph G {
@@ -891,22 +889,11 @@ digraph G {
   start[style="rounded,filled"; fillcolor="#ffffcc"]
 }
 ----
-|
-`StreamThread#runLoop()`
 
-* poll
-* initialize/restore (idempotent)
-* process (batch) (cached)
-* punctuate
-* flush caches
-* commit
-|===
 
 == Kafka Streams execution loop
 
-[cols="50a,50a"]
-|===
-|
+
 [graphviz,"streamsloop2.png"]
 ----
 digraph G {
@@ -929,22 +916,11 @@ digraph G {
   while[style="rounded,filled"; fillcolor="#ffffcc"]
 }
 ----
-|
-`StreamThread#runLoop()`
 
-* poll
-* initialize/restore (idempotent)
-* process (batch) (cached)
-* punctuate
-* flush caches
-* commit
-|===
 
 == Kafka Streams execution loop
 
-[cols="50a,50a"]
-|===
-|
+
 [graphviz,"streamsloop3.png"]
 ----
 digraph G {
@@ -967,22 +943,10 @@ digraph G {
   poll[style="rounded,filled"; fillcolor="#ffffcc"]
 }
 ----
-|
-`StreamThread#runLoop()`
-
-* poll
-* initialize/restore (idempotent)
-* process (batch) (cached)
-* punctuate
-* flush caches
-* commit
-|===
 
 == Kafka Streams execution loop
 
-[cols="50a,50a"]
-|===
-|
+
 [graphviz,"streamsloop4.png"]
 ----
 digraph G {
@@ -1005,22 +969,9 @@ digraph G {
   process[style="rounded,filled"; fillcolor="#ffffcc"]
 }
 ----
-|
-`StreamThread#runLoop()`
-
-* poll
-* initialize/restore (idempotent)
-* process (batch) (cached)
-* punctuate
-* flush caches
-* commit
-|===
 
 == Kafka Streams execution loop
 
-[cols="50a,50a"]
-|===
-|
 [graphviz,"streamsloop5.png"]
 ----
 digraph G {
@@ -1043,22 +994,9 @@ digraph G {
   cache[style="rounded,filled"; fillcolor="#ffffcc"]
 }
 ----
-|
-`StreamThread#runLoop()`
-
-* poll
-* initialize/restore (idempotent)
-* process (batch) (cached)
-* punctuate
-* flush caches
-* commit
-|===
 
 == Kafka Streams execution loop
 
-[cols="50a,50a"]
-|===
-|
 [graphviz,"streamsloop6.png"]
 ----
 digraph G {
@@ -1081,22 +1019,9 @@ digraph G {
   forward[style="rounded,filled"; fillcolor="#ffffcc"]
 }
 ----
-|
-`StreamThread#runLoop()`
-
-* poll
-* initialize/restore (idempotent)
-* process (batch) (cached)
-* punctuate
-* flush caches
-* commit
-|===
 
 == Kafka Streams execution loop
 
-[cols="50a,50a"]
-|===
-|
 [graphviz,"streamsloop7.png"]
 ----
 digraph G {
@@ -1119,23 +1044,9 @@ digraph G {
   send[style="rounded,filled"; fillcolor="#ffffcc"]
 }
 ----
-|
-`StreamThread#runLoop()`
-
-* poll
-* initialize/restore (idempotent)
-* process (batch) (cached)
-* punctuate
-* flush caches
-* commit
-|===
-
 
 == Kafka Streams execution loop
 
-[cols="50a,50a"]
-|===
-|
 [graphviz,"streamsloop8.png"]
 ----
 digraph G {
@@ -1158,25 +1069,10 @@ digraph G {
   commit[style="rounded,filled"; fillcolor="#ffffcc"]
 }
 ----
-|
-`StreamThread#runLoop()`
-
-* poll
-* initialize/restore (idempotent)
-* process (batch) (cached)
-* punctuate
-* flush caches
-* commit
-|===
-
 
 
 == TopologyTestDriver execution loop
 
-
-[cols="50a,50a"]
-|===
-|
 [graphviz,"ttdloop1.png"]
 ----
 digraph G {
@@ -1198,24 +1094,9 @@ digraph G {
   pipeInput[style="rounded,filled"; fillcolor="#ffffcc"]
 }
 ----
-|
-`TopologyTestDriver#pipeRecord`
-
-* enqueue
-* while queue not empty:
-** dequeue record
-** process
-** punctuate
-** flush caches
-** re-enqueue internal "topic" results
-|===
 
 == TopologyTestDriver execution loop
 
-
-[cols="50a,50a"]
-|===
-|
 [graphviz,"ttdloop2.png"]
 ----
 digraph G {
@@ -1237,24 +1118,9 @@ digraph G {
   enqueue[style="rounded,filled"; fillcolor="#ffffcc"];
 }
 ----
-|
-`TopologyTestDriver#pipeRecord`
-
-* enqueue
-* while queue not empty:
-** dequeue record
-** process
-** punctuate
-** flush caches
-** re-enqueue internal "topic" results
-|===
 
 == TopologyTestDriver execution loop
 
-
-[cols="50a,50a"]
-|===
-|
 [graphviz,"ttdloop3.png"]
 ----
 digraph G {
@@ -1276,24 +1142,9 @@ digraph G {
   while[style="rounded,filled"; fillcolor="#ffffcc"];
 }
 ----
-|
-`TopologyTestDriver#pipeRecord`
-
-* enqueue
-* while queue not empty:
-** dequeue record
-** process
-** punctuate
-** flush caches
-** re-enqueue internal "topic" results
-|===
 
 == TopologyTestDriver execution loop
 
-
-[cols="50a,50a"]
-|===
-|
 [graphviz,"ttdloop4.png"]
 ----
 digraph G {
@@ -1315,24 +1166,9 @@ digraph G {
   dequeue[style="rounded,filled"; fillcolor="#ffffcc"];
 }
 ----
-|
-`TopologyTestDriver#pipeRecord`
-
-* enqueue
-* while queue not empty:
-** dequeue record
-** process
-** punctuate
-** flush caches
-** re-enqueue internal "topic" results
-|===
 
 == TopologyTestDriver execution loop
 
-
-[cols="50a,50a"]
-|===
-|
 [graphviz,"ttdloop5.png"]
 ----
 digraph G {
@@ -1354,24 +1190,9 @@ digraph G {
   process[style="rounded,filled"; fillcolor="#ffffcc"];
 }
 ----
-|
-`TopologyTestDriver#pipeRecord`
-
-* enqueue
-* while queue not empty:
-** dequeue record
-** process
-** punctuate
-** flush caches
-** re-enqueue internal "topic" results
-|===
 
 == TopologyTestDriver execution loop
 
-
-[cols="50a,50a"]
-|===
-|
 [graphviz,"ttdloop6.png"]
 ----
 digraph G {
@@ -1393,24 +1214,9 @@ digraph G {
   forward[style="rounded,filled"; fillcolor="#ffffcc"];
 }
 ----
-|
-`TopologyTestDriver#pipeRecord`
-
-* enqueue
-* while queue not empty:
-** dequeue record
-** process
-** punctuate
-** flush caches
-** re-enqueue internal "topic" results
-|===
 
 == TopologyTestDriver execution loop
 
-
-[cols="50a,50a"]
-|===
-|
 [graphviz,"ttdloop7.png"]
 ----
 digraph G {
@@ -1432,18 +1238,6 @@ digraph G {
   enqueue2[style="rounded,filled"; fillcolor="#ffffcc"];
 }
 ----
-|
-`TopologyTestDriver#pipeRecord`
-
-* enqueue
-* while queue not empty:
-** dequeue record
-** process
-** punctuate
-** flush caches
-** re-enqueue internal "topic" results
-|===
-
 
 == What else?
 
@@ -2038,6 +1832,14 @@ deactivate Awaitility
 == KIP-655 is under discussion
 
 image::kip-655.png[{image-80-width}]
+
+== Useful links
+
+* Confluent blog:  https://www.confluent.io/blog/testing-kafka-streams/[Testing Kafka Streams – A Deep Dive]
+
+* *pro.kafka*: Russian Kafka chat in Telegram: https://t.me/proKafka
+
+* Confluent community Slack: https://cnfl.io/slack
 
 == Thank you!
 
