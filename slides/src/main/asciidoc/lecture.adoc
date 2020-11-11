@@ -1348,11 +1348,13 @@ digraph D {
 
 == `TopologyTestDriver`: "Fused" subtopologies
 
+`ToplogyTestDriver`
+
 [graphviz,"fused.png"]
 ----
 digraph G {
   rankdir="LR";
-  graph [dpi = 180]; 
+  graph [dpi = 130]; 
   node[shape="box"; style="rounded"];
   
   S1[label=<<table cellspacing="30" cellborder="0"  border="0">
@@ -1362,13 +1364,13 @@ digraph G {
 }
 ----
 
-== Kafka Streams: repartition topics
+Kafka Streams
 
 [graphviz,"repart.png"]
 ----
 digraph G {
   rankdir="LR";
-  graph [dpi = 180]; 
+  graph [dpi = 130]; 
   node[shape="box"; style="rounded"];
   S1->repart->S2;
   repart[shape="none";
@@ -1404,7 +1406,7 @@ digraph G {
   graph [dpi = 180];
   node[shape="circle"];
   subgraph cluster_0 {
-  label = "pipeInput order";
+  label = "timestamp order";
 
   A->X2->B[style=invis];
   A->B[style=invis];
@@ -1438,7 +1440,7 @@ digraph G {
   graph [dpi = 180];
   node[shape="circle"];
   subgraph cluster_0 {
-  label = "timestamp order";
+  label = "pipeInput order";
   A->X2->B[style=invis];
   A->B[style=invis];
   D->C[style=invis];
