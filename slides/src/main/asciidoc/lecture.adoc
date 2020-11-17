@@ -62,9 +62,11 @@ John Roesler:
 Ivan introduces John
 --
 
-== Overview
+== Kafka Streams Testing: A Deep Dive
 
 1. Purpose: cover testing methodologies for Kafka Streams
+   * "Unit" Testing: TopologyTestDriver
+   * Integration Testing: KafkaStreams
 2. Start with motivating example (from Ivan's production)
 3. A flawed testing approach: unit testing doesn't work for this example
 4. Deep-dive into the testing framework
@@ -175,20 +177,6 @@ DB[shape="cylinder", label=<<table cellspacing="5" cellborder="0"  border="0">
 That's why we would like to deduplicate records using Kafka streams before we dump them to the database
 
 Looks like a perfect fit for KStreams - let's write an application!
---
-
-== Demo
-
-1. Spring Boot app
-2. Let's do some test-driven development and first write a test
-3. Writing a test with TTDriver
-
-[.notes]
---
-Ivan is live-coding, John is commenting. 
-Test fails because nothing is implemented yet.
-Then we turn to slides to discuss what TTD can do
-
 --
 
 == `TopologyTestDriver`
@@ -328,6 +316,20 @@ digraph G {
 readRecordsToList()`
 |===
 
+
+== Demo
+
+1. Spring Boot app
+2. Let's do some test-driven development and first write a test
+3. Writing a test with TTDriver
+
+[.notes]
+--
+Ivan is live-coding, John is commenting. 
+Test fails because nothing is implemented yet.
+Then we turn to slides to discuss what TTD can do
+
+--
 
 == A "Simple Solution"
 
