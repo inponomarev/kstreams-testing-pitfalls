@@ -196,16 +196,6 @@ outputTopic --> topologyTestDriver
 @enduml
 ----
 
-[source,java]
------
-TestInputTopic<String, String> inputTopic =
-  topologyTestDriver.createInputTopic(
-    INPUT_TOPIC, new StringSerializer(), new StringSerializer());
-
-TestOutputTopic<String, String> outputTopic =
-  topologyTestDriver.createOutputTopic(
-    OUTPUT_TOPIC, new StringDeserializer(), new StringDeserializer());
------
 
 
 == `TopologyTestDriver` capabilities
@@ -271,8 +261,6 @@ readValuesToList()`
 
 `Map<K,V> readKeyValuesToMap()`
 |===
-
-
 
 
 == `TopologyTestDriver` capabilities
