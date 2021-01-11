@@ -14,6 +14,7 @@ import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
 import org.springframework.kafka.core.DefaultKafkaProducerFactory;
 import org.springframework.kafka.test.utils.KafkaTestUtils;
 
+import java.time.Duration;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -42,7 +43,7 @@ public class BaseTest {
             ExecutorService service = Executors.newSingleThreadExecutor();
             Future<?> consumingTask = service.submit(() -> {
                 while (!Thread.currentThread().isInterrupted()) {
-                    ConsumerRecords<String, String> records = KafkaTestUtils.getRecords(consumer, 100);
+                    ConsumerRecords<String, String> records = consumer.poll(Duration.ofMillis(100));
                     for (ConsumerRecord<String, String> rec : records) {
                         actual.add(rec.value());
                     }
@@ -54,7 +55,7 @@ public class BaseTest {
                         .until(() -> List.of("A", "B", "C").equals(actual));
             } finally {
                 consumingTask.cancel(true);
-                service.awaitTermination(100, MILLISECONDS);
+                service.awaitTermination(200, MILLISECONDS);
             }
         }
     }
