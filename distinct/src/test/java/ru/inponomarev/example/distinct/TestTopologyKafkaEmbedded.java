@@ -1,5 +1,6 @@
 package ru.inponomarev.example.distinct;
 
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.kafka.KafkaProperties;
@@ -15,6 +16,7 @@ import static ru.inponomarev.example.distinct.configuration.TopologyConfiguratio
 @SpringBootTest
 @EmbeddedKafka(bootstrapServersProperty = "spring.kafka.bootstrap-servers")
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
+@Disabled
 public class TestTopologyKafkaEmbedded extends BaseTest {
     @Autowired
     private KafkaProperties properties;

@@ -5,6 +5,7 @@ import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.producer.Producer;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.apache.kafka.common.serialization.StringSerializer;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.kafka.KafkaProperties;
@@ -23,6 +24,7 @@ import static com.jokerconf.kstreams.configuration.TopicsConfiguration.OUTPUT_TO
 
 @SpringBootTest
 @EmbeddedKafka(bootstrapServersProperty = "spring.kafka.bootstrap-servers")
+@Disabled
 public class EmbeddedKafkaTest {
 
     @Autowired

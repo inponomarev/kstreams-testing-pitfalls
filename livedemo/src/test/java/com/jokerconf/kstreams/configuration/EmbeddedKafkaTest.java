@@ -11,6 +11,7 @@ import org.apache.kafka.common.serialization.StringDeserializer;
 import org.apache.kafka.common.serialization.StringSerializer;
 import org.awaitility.Awaitility;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.kafka.KafkaProperties;
@@ -42,6 +43,7 @@ import static java.util.concurrent.TimeUnit.SECONDS;
 
 @SpringBootTest
 @EmbeddedKafka(bootstrapServersProperty = "spring.kafka.bootstrap-servers")
+@Disabled
 public class EmbeddedKafkaTest {
 
     @Autowired

@@ -1,5 +1,6 @@
 package ru.inponomarev.example.distinct;
 
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.kafka.KafkaProperties;
@@ -21,6 +22,7 @@ public class TestTopologyKafkaContainers extends BaseTest {
     private KafkaProperties properties;
 
     @Test
+    @Disabled
     public void wrongDistinctTopology() {
         String servers = String.join(",", properties.getBootstrapServers());
         System.out.printf("Kafka Container: %s%n", servers);
