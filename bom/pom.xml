@@ -25,7 +25,7 @@
 
     <properties>
         <kafka.version>3.2.1</kafka.version>
-        <jackson.version>2.13.3</jackson.version>
+        <jackson.version>2.13.4</jackson.version>
         
         <asciidoctor.maven.plugin.version>1.6.0</asciidoctor.maven.plugin.version>
         <project.slides.directory>${project.build.directory}/generated-slides</project.slides.directory>
